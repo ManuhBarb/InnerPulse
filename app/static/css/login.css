@@ -1,0 +1,139 @@
+/* --- LAYOUT PRINCIPAL --- */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.container-login {
+    display: flex;
+    height: 100vh;
+}
+
+
+/* --- LADO ESQUERDO (LOGIN) --- */
+.box-login {
+    width: 50%;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    text-align: center;
+}
+
+.box-login h2 {
+    font-size: 30px;
+    margin-bottom: 5px;
+    color: rgb(9, 17, 121);
+    font-weight: 700;
+}
+
+.box-login p {
+    font-size: 18px;
+    color: #444;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+.campo {
+    width: 100%;
+    max-width: 320px;
+    text-align: left;
+    margin-bottom: 18px;
+}
+
+.campo label {
+    font-size: 16px;
+    color: #222;
+    font-weight: 600;
+}
+
+.campo input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #888;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.btn-login {
+    width: 100%;
+    max-width: 320px;
+    padding: 12px;
+    margin-top: 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 17px;
+    color: white;
+    cursor: pointer;
+    background: linear-gradient(135deg, #110965, #002b99);
+    font-weight: 700;
+}
+
+.btn-login:hover {
+    opacity: 0.9;
+}
+
+.link-criar {
+    margin-top: 18px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.link-criar a {
+    text-decoration: none;
+    padding: 8px 14px;
+    border: 1px solid rgb(9, 17, 121);
+    color: rgb(9, 17, 121);
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+.link-criar a:hover {
+    background: rgb(9, 17, 121);
+    color: white;
+}
+
+
+/* --- LADO DIREITO (TEXTO + GRADIENTE) --- */
+.texto-info {
+    width: 50%;
+    color:#110965;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: rgba(70, 120, 200, 0.28);
+    backdrop-filter: blur(6px);
+}
+
+.texto-info h1 {
+    font-size: 34px;
+    margin-bottom: 20px;
+    font-weight: 800;
+}
+
+.texto-info p {
+    font-size: 18px;
+    line-height: 1.7;
+    max-width: 420px;
+    font-weight: 600;
+}
+
+
+/* --- RESPONSIVO --- */
+@media (max-width: 900px) {
+    .container-login {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .box-login, .texto-info {
+        width: 100%;
+        height: auto;
+        padding: 40px;
+    }
+}

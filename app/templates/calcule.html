@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="buraco">
+    <div class="left">
+        <h1 class="titleCalc">Calculadora</h1>
+        <p>
+            Aqui você consegue calcular índices necessários para o melhor acompanhamento da sua saúde!
+            Aproveite o recurso.
+        </p>
+        <p>
+            OBS: Antes de qualquer auto diagnóstico deve ser feita uma consulta médica.
+            Essa ferramenta é apenas para acompanhamento médio.
+        </p>
+    </div>
+
+    <div class="right">
+        <div class="calculator">
+            <select id="tipoCalc" onchange="mostrarCampos()">
+                <option value="">Selecione o tipo de cálculo</option>
+                <option value="imc">IMC</option>
+                <option value="glicose">Glicose</option>
+                <option value="agua">Hidratação Diária</option>
+                <option value="pressao">Pressão Arterial</option>
+            </select>
+
+            <div id="campos"></div>
+            <button id="btnCalc" onclick="calcular()">Calcular</button>
+            <div id="resultado"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function mostrarCampos() {
+        let tipo = document.getElementById('tipoCalc').value;
+        let campos = document.getElementById('campos');
+        let res = document.getElementById('resultado');
+        res.innerHTML = "";
+
+        if (tipo === "imc") {
+            campos.innerHTML = `
+                <label>Peso (kg):</label>
+                <input type="number" id="peso" placeholder="Ex: 70">
+                <label>Altura (m):</label>
+                <input type="number" id="altura" step="0.01" placeholder="Ex: 1.75">
+            `;
+        } else if (tipo === "glicose") {
+            campos.innerHTML = `
+                <label>Valor da glicose (mg/dL):</label>
+                <input type="number" id="glicose" placeholder="Ex: 100">
+            `;
+        } else if (tipo === "agua") {
+            campos.innerHTML = `
+                <label>Peso corporal (kg):</label>
+                <input type="number" id="pesoAgua" placeholder="Ex: 70">
+            `;
+        } else if (tipo === "pressao") {
+            campos.innerHTML = `
+                <label>Pressão Sistólica (máxima):</label>
+                <input type="number" id="sis" placeholder="Ex: 120">
+                <label>Pressão Diastólica (mínima):</label>
+                <input type="number" id="dias" placeholder="Ex: 80">
+            `;
+        } else {
+            campos.innerHTML = "";
+        }
+    }
+
+    function calcular() {
+        let tipo = document.getElementById('tipoCalc').value;
+        let resultado = document.getElementById('resultado');
+
+        if (!tipo) {
+            resultado.innerHTML = "<p style='color: red;'>Selecione um tipo de cálculo</p>";
+            return;
+        }
+
+        try {
+            if (tipo === "imc") {
+                calcularIMC();
+            } else if (tipo === "glicose") {
+                calcularGlicose();
+            } else if (tipo === "agua") {
+                calcularAgua();
+            } else if (tipo === "pressao") {
+                calcularPressao();
+            }
+        } catch (error) {
+            resultado.innerHTML = `<p style='color: red;'>Erro: Preencha todos os campos corretamente</p>`;
+        }
+    }
+
+    function calcularIMC() {
+        let peso = parseFloat(document.getElementById('peso').value);
+        let altura = parseFloat(document.getElementById('altura').value);
+        let resultado = document.getElementById('resultado');
+
+        if (!peso || !altura || altura <= 0) {
+            throw new Error("Dados inválidos");
+        }
+
+        let imc = peso / (altura * altura);
+        let classificacao = "";
+
+        if (imc < 18.5) {
+            classificacao = "Abaixo do peso";
+        } else if (imc < 25) {
+            classificacao = "Peso normal";
+        } else if (imc < 30) {
+            classificacao = "Sobrepeso";
+        } else if (imc < 35) {
+            classificacao = "Obesidade grau I";
+        } else if (imc < 40) {
+            classificacao = "Obesidade grau II";
+        } else {
+            classificacao = "Obesidade grau III";
+        }
+
+        resultado.innerHTML = `
+        <div class="result-content">
+            <h3>Resultado IMC:</h3>
+            <p><strong>${imc.toFixed(2)}</strong> - ${classificacao}</p>
+            <p style="font-size: 0.9em; color: #666;">Classificação conforme OMS</p>
+        </div>
+    `;
+    }
+
+    function calcularGlicose() {
+        let glicose = parseInt(document.getElementById('glicose').value);
+        let resultado = document.getElementById('resultado');
+
+        if (!glicose) {
+            throw new Error("Dados inválidos");
+        }
+
+        let status = "";
+        let cor = "";
+
+        if (glicose < 70) {
+            status = "Hipoglicemia (Abaixo do normal)";
+            cor = "red";
+        } else if (glicose <= 99) {
+            status = "Normal";
+            cor = "green";
+        } else if (glicose <= 125) {
+            status = "Pré-diabetes";
+            cor = "orange";
+        } else {
+            status = "Diabetes";
+            cor = "red";
+        }
+
+        resultado.innerHTML = `
+            <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                <h3>Resultado Glicose:</h3>
+                <p><strong>${glicose} mg/dL</strong> - <span style="color: ${cor};">${status}</span></p>
+                <p style="font-size: 0.9em; color: #666;">Valores de referência em jejum</p>
+            </div>
+        `;
+    }
+
+    function calcularAgua() {
+        let peso = parseFloat(document.getElementById('pesoAgua').value);
+        let resultado = document.getElementById('resultado');
+
+        if (!peso) {
+            throw new Error("Dados inválidos");
+        }
+
+        let aguaMl = peso * 35;
+        let aguaCopos = Math.round(aguaMl / 200);
+
+        resultado.innerHTML = `
+            <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                <h3>Hidratação Diária Recomendada:</h3>
+                <p><strong>${aguaMl.toFixed(0)} ml</strong> por dia</p>
+                <p>Aproximadamente <strong>${aguaCopos} copos</strong> de 200ml</p>
+                <p style="font-size: 0.9em; color: #666;">Recomendação: 35ml por kg de peso</p>
+            </div>
+        `;
+    }
+
+    function calcularPressao() {
+        let sistolica = parseInt(document.getElementById('sis').value);
+        let diastolica = parseInt(document.getElementById('dias').value);
+        let resultado = document.getElementById('resultado');
+
+        if (!sistolica || !diastolica) {
+            throw new Error("Dados inválidos");
+        }
+
+        let classificacao = "";
+        let cor = "";
+
+        if (sistolica < 90 || diastolica < 60) {
+            classificacao = "Hipotensão (Pressão baixa)";
+            cor = "blue";
+        } else if (sistolica <= 120 && diastolica <= 80) {
+            classificacao = "Normal";
+            cor = "green";
+        } else if (sistolica <= 139 || diastolica <= 89) {
+            classificacao = "Pré-hipertensão";
+            cor = "orange";
+        } else if (sistolica <= 159 || diastolica <= 99) {
+            classificacao = "Hipertensão Estágio 1";
+            cor = "red";
+        } else if (sistolica <= 180 || diastolica <= 110) {
+            classificacao = "Hipertensão Estágio 2";
+            cor = "red";
+        } else {
+            classificacao = "Crise hipertensiva";
+            cor = "darkred";
+        }
+
+        resultado.innerHTML = `
+            <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                <h3>Resultado Pressão Arterial:</h3>
+                <p><strong>${sistolica}/${diastolica} mmHg</strong></p>
+                <p style="color: ${cor};">${classificacao}</p>
+                <p style="font-size: 0.9em; color: #666;">Classificação conforme diretrizes médicas</p>
+            </div>
+        `;
+    }
+</script>
+{% endblock %}

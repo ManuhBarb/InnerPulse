@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="index d-flex align-items-center">
+    <div class="porra">
+        <h1 class="display-4">INNER PULSE</h1>
+        <p class="princ">
+            Mesmo nas rotinas mais difíceis, há espaço para força, cuidado e qualidade de vida.
+            Estamos aqui para apoiar cada passo da sua jornada de autocuidado e superação
+        </p>
+        <a href="#resto" class="btn btn-primary btn-lg mt-3">Saiba mais</a>
+    </div>
+</div>
+
+<div id="resto" class="container mt-5">
+    <br>
+    <p class="apresentacao">A plataforma Inner Pulse é uma iniciativa inovadora desenvolvida por duas estudantes do
+        ensino médio do IFSULDEMINAS
+        – Campus Muzambinho, com o objetivo de transformar a forma como pessoas com doenças crônicas lidam com sua saúde
+        no dia a dia.
+        <br><br>
+        Criada a partir da preocupação com a rotina desafiadora desses pacientes, a Inner Pulse busca ser mais do que
+        uma simples
+        ferramenta digital: é um apoio constante. A plataforma oferece funcionalidades que ajudam na organização de
+        medicamentos,
+        consultas, exames e atividades diárias, promovendo mais autonomia e bem-estar para quem convive com condições
+        crônicas como
+        diabetes, hipertensão, asma, entre outras.
+        <br><br>
+        Além disso, a Inner Pulse tem um importante papel educacional. Sabendo que muitas pessoas não têm acesso fácil a
+        informações de
+        qualidade sobre suas doenças, a plataforma disponibiliza conteúdos claros e acessíveis, que explicam sintomas,
+        cuidados necessários,
+        hábitos saudáveis e alertas importantes – tudo de forma simples, confiável e voltada para o público leigo.
+        <br><br>
+        Com uma interface amigável e pensada para todas as idades, a Inner Pulse se destaca por aliar tecnologia,
+        empatia e conhecimento.
+        A iniciativa das estudantes mostra como a juventude, a ciência e a educação podem caminhar juntas para gerar
+        impacto social e
+        melhorar vidas.
+    </p>
+</div>
+
+<!-- SEÇÃO DE COMENTÁRIOS FIXOS (com fotos circulares) -->
+<div id="comentarios" class="container mt-5 mb-5">
+    <h2 class="text-center mb-4">Comunidade Inner Pulse 💬</h2>
+    <p class="text-center text-muted mb-4">
+        Veja o que outras pessoas estão dizendo sobre a plataforma.
+    </p>
+
+    <div class="row">
+        <!-- Coluna da esquerda -->
+        <div class="col-md-6">
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body d-flex align-items-start">
+                    <img src="{% static 'imagens/user1.jpg' %}" class="rounded-circle me-3" alt="Maria Silva" width="50"
+                        height="50">
+                    <div>
+                        <h5 class="card-title mb-1">Maria Silva</h5>
+                        <p class="card-text">
+                            A Inner Pulse me ajuda a manter minha rotina de cuidados com muito mais facilidade!
+                        </p>
+                        <small class="text-muted">20/10/2025 às 14:35</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endblock %}

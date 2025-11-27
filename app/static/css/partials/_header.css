@@ -1,0 +1,70 @@
+.custom-navbar {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px 60px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.login-wrapper {
+  margin-left: auto;
+}
+
+.login-btn, .botao-login {
+  display: inline-block;
+  z-index: 1001; 
+}
+
+
+.navbar-nav .nav-link {
+  color: rgb(9, 17, 121);
+  font-weight: 500;
+  margin: 0 15px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link.active {
+  color: rgb(9, 17, 121);
+  font-weight: 600;
+  border-bottom: 3px solid rgb(9, 17, 121);
+  padding-bottom: 5px;
+}
+
+.navbar-nav .nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 3px;
+  background-color: rgb(9, 17, 121);
+  transition: width 0.3s ease;
+}
+
+
+.custom-navbar .nav-link:hover {
+  color: rgba(9, 17, 121, 0.8);
+  transform: translateY(-2px);
+}
+
+
+.login-btn {
+  border: 2px solid rgb(9, 17, 121);
+  color: white;
+  background: rgb(9, 17, 121);
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 6px 18px;
+  transition: all 0.3s ease;
+}
+
+
+.login-btn:hover {
+  background: white;
+  color: rgb(9, 17, 121);
+}

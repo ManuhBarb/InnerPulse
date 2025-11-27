@@ -1,0 +1,164 @@
+/* Todas as classes começam com ip- para não interferir no resto do site */
+
+.ip-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 70px;
+}
+
+/* ------------------------------ */
+/* CAIXAS */
+/* ------------------------------ */
+
+.ip-calendario,
+.ip-formulario {
+    background: #ffffff;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.06);
+    flex: 1;
+    min-width: 320px;
+}
+
+/* ------------------------------ */
+/* CALENDÁRIO */
+/* ------------------------------ */
+
+.ip-header-selects {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.ip-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+.ip-day {
+    background: #f2f2f2;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    color: rgb(9, 17, 121);
+    transition: background 0.2s;
+}
+
+.ip-day:hover {
+    background: rgba(46, 55, 183, 0.567);
+}
+
+.ip-selected {
+    background: #c9c9c9;
+    font-weight: bold;
+}
+
+/* ------------------------------ */
+/* FORMULÁRIO */
+/* ------------------------------ */
+
+.ip-formulario input,
+.ip-formulario select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cfcfcf;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.ip-formulario button {
+    width: 100%;
+    background:rgb(9, 17, 121);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.ip-formulario button:hover {
+    background: rgba(30, 37, 139, 0.745);
+}
+
+/* ------------------------------ */
+/* EVENTOS */
+/* ------------------------------ */
+
+.ip-eventos {
+    margin-top: 15px;
+}
+
+.ip-evento-item {
+    background: #f7f7f7;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+/* BOTÃO EXCLUIR — agora realmente pequeno */
+.ip-remover {
+    width: 16px !important;      /* bem pequeno */
+    height: 16px !important;     /* bem pequeno */
+    padding: 0 !important;
+    margin-left: 10px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    font-size: 10px !important;  /* texto pequeno */
+    font-weight: bold;
+    line-height: 0 !important;
+
+    background: #b93030 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+    cursor: pointer;
+    
+    flex-shrink: 0 !important; /* nunca estica */
+}
+
+.ip-remover:hover {
+    background: #9c2626 !important;
+}
+
+/* ------------------------------ */
+/* RESPONSIVIDADE */
+/* ------------------------------ */
+
+@media (max-width: 850px) {
+    .ip-container {
+        flex-direction: column;
+    }
+}
+
+/* ==== Calendário não aumenta ==== */
+
+.ip-calendario {
+    height: 480px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.ip-calendar-grid {
+    flex-shrink: 0;
+}
+
+/* Dia com compromisso destacado */
+.ip-day-evento {
+    background: #ffd27f !important;   /* amarelinho de destaque */
+    border: 2px solid #ffb84d !important;
+    font-weight: bold !important;
+    color: #000 !important;
+}

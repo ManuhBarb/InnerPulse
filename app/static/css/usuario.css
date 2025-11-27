@@ -1,0 +1,182 @@
+* {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.volte {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: #0B0E97;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    text-decoration: none;
+}
+
+.volte:hover {
+    background: #061D7A;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+form, .form-container, .content, .wrapper {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+input, select, textarea {
+    width: 100%;
+    max-width: 100%;
+}
+
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #110965, #002b99);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 0;
+}
+
+/* === Container do formulário === */
+.container-login {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* === Caixa branca === */
+.box-login {
+    background: #ffffff;
+    width: 650px;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* Título */
+.box-login h2 {
+    margin-bottom: 5px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #0a0a38;
+}
+
+/* Subtítulo */
+.box-login p {
+    margin-bottom: 25px;
+    color: #555;
+    font-size: 15px;
+}
+
+/* === Campos === */
+.campo {
+    text-align: left;
+    margin-bottom: 20px; /* mais espaço entre campos */
+}
+
+.campo label {
+    display: block;
+    margin-bottom: 6px;
+    color: #333;
+    font-weight: bold;
+}
+
+.campo input,
+.campo select { 
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 14px;
+    background: white;
+}
+
+.campo input:focus,
+.campo select:focus {
+    border-color: #002b99;
+}
+
+/* === Botão === */
+.btn-login {
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    background: linear-gradient(135deg, #0d0a8c, #003fb3);
+    color: white;
+    border: none;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-login:hover {
+    background: linear-gradient(135deg, #0f0cb0, #004fcc);
+}
+
+/* Link login */
+.link-criar {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.link-criar a {
+    color: #003fb3;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.link-criar a:hover {
+    text-decoration: underline;
+}
+
+/* Mensagens */
+.messages {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 15px;
+}
+
+.messages li {
+    background: #ffdddd;
+    color: #a30000;
+    border-left: 4px solid #a30000;
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+
+.duplo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.campo {
+    width: 100%;
+}
+
+@media (max-width: 600px) {
+    .duplo {
+        grid-template-columns: 2fr;
+    }
+}

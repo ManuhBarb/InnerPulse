@@ -1,0 +1,116 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastre-se</title>
+    <link rel="stylesheet" href="{% static 'css/usuario.css' %}">
+</head>
+
+<body>
+
+    <button onclick="window.history.back()" class="volte">←-</button>
+
+    <div class="container-login">
+
+        <div class="box-login">
+            <h2>Criar nova conta</h2>
+            <p>Preencha os dados abaixo para criar sua conta</p>
+
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <form method="post" action="{% url 'cadastro' %}">
+                {% csrf_token %}
+
+                <div class="duplo">
+                    <div class="campo">
+                        <label for="nome">Nome completo</label>
+                        <input id="nome" name="nome" type="text" required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="data_nasc">Data de nascimento</label>
+                        <input id="data_nasc" name="data_nasc" type="date" required>
+                    </div>
+                </div>
+
+                <div class="duplo">
+                    <div class="campo">
+                        <label for="cpf">CPF</label>
+                        <input id="cpf" name="cpf" type="text" required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="telefone">Telefone</label>
+                        <input id="telefone" name="telefone" type="text" required>
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="email" required>
+                </div>
+
+                <div class="campo">
+                    <label for="doenca">Doença do usuário</label>
+                    <input id="doenca" name="doenca" type="text" required>
+                </div>
+
+                <div class="duplo">
+                    <div class="campo">
+                        <label for="cidade">Cidade</label>
+                        <select id="cidade" name="cidade" required>
+                            <option value="">Selecione...</option>
+                            {% for c in cidades %}
+                            <option value="{{ c.id }}">{{ c.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="ocupacao">Ocupação</label>
+                        <select id="ocupacao" name="ocupacao" required>
+                            <option value="">Selecione...</option>
+                            {% for o in ocupacoes %}
+                            <option value="{{ o.id }}">{{ o.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="duplo">
+                    <div class="campo">
+                        <label for="senha">Senha</label>
+                        <input id="senha" name="senha" type="password" required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="senha2">Confirmar senha</label>
+                        <input id="senha2" name="senha2" type="password" required>
+                    </div>
+                </div>
+
+
+                <button type="submit" class="btn-login">Criar conta</button>
+            </form>
+
+            <div class="link-criar">
+                <p>Já tem uma conta?</p>
+                <a href="{% url 'login' %}">Fazer login</a>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

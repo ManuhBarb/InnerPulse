@@ -1,0 +1,179 @@
+    {% extends "base.html" %}
+    {% load static %}
+    {% block content %}
+
+    <br>
+
+    <div id="conteudo" class="conteudo">
+        <h1 class="title">Catálogo de doenças crônicas</h1>
+        <p class="text1">Procure aqui as doenças crônicas mais famosas atualmente, se intere nesse mundo de informações!</p>
+    </div>
+    <main class="principal">
+        <div class="search">
+            <input id="s" type="search" placeholder="pesquise por nome, sintoma ou palavra-chave">
+            <select id="cat">
+                <option value="">Todas as categorias</option>
+            </select>
+        </div>
+        <section id="list" class="grid"></section>
+    </main>
+
+    <div id="modal" class="modal">
+        <div class="modalCard">
+            <button id="close" class="btn" style="float:right;background:#eee;color:var(--primary);">Fechar</button>
+            <h2 id="mtitle"></h2>
+            <div class="cols">
+                <div>
+                    <p id="mtag" class="tag"></p>
+                    <p id="msyn" class="meta"></p>
+                    <p id="mdesc" class="desc"></p>
+                </div>
+                <div>
+                    <h4>Fato rápido</h4>
+                    <p id="mfast" class="meta"></p>
+                    <h4>Como é tratado</h4>
+                    <p id="mtreat" class="meta"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const D = [
+                { n: 'Hipertensão arterial', c: 'Cardiovasculares', s: 'Pressão alta, dor de cabeça, tontura', d: 'Doença caracterizada por pressão arterial elevada de forma persistente. Pode levar a AVC e infarto se não controlada.', f: 'Afeta principalmente adultos, prevalência aumenta com a idade.', t: 'Mudança de estilo de vida, anti-hipertensivos e acompanhamento médico.' },
+                { n: 'Diabetes tipo 2', c: 'Endócrinas', s: 'Sede excessiva, urina frequente, fadiga', d: 'Doença metabólica com resistência à insulina e glicemia elevada.', f: 'Relacionada a obesidade e sedentarismo.', t: 'Dieta, atividade física, hipoglicemiantes orais e insulina quando necessário.' },
+                { n: 'Asma', c: 'Respiratórias', s: 'Chiado, falta de ar, tosse', d: 'Inflamação crônica das vias aéreas com episódios de broncoespasmo.', f: 'Padrões de gatilhos alérgicos ou ambientais.', t: 'Brônquicos inalados, controle de gatilhos e plano de ação.' },
+                { n: 'Doença pulmonar obstrutiva crônica', c: 'Respiratórias', s: 'Tosse crônica, produção de muco, cansaço', d: 'Perda progressiva da função pulmonar geralmente por tabagismo.', f: 'Comum em fumantes de longa data.', t: 'Cessar tabagismo, broncodilatadores, reabilitação pulmonar.' },
+                { n: 'Artrite reumatoide', c: 'Autoimunes', s: 'Dor nas juntas, inchaço, rigidez matinal', d: 'Doença autoimune que causa inflamação nas articulações.', f: 'Pode afetar qualquer idade, mas mais comum em adultos jovens e de meia-idade.', t: 'AINEs, corticoides e medicamentos modificadores da doença.' },
+                { n: 'Insuficiência renal crônica', c: 'Renais', s: 'Fadiga, inchaço, alteração na urina', d: 'Perda gradual da função renal que pode levar à hemodiálise.', f: 'Causas comuns: diabetes e hipertensão.', t: 'Controle da causa, dieta renal, diálise ou transplante em estágios avançados.' },
+                { n: 'Doença de Alzheimer', c: 'Neurológicas', s: 'Perda de memória, confusão, mudanças de comportamento', d: 'Processo neurodegenerativo progressivo que compromete memória e funções cognitivas.', f: 'Risco aumenta com a idade.', t: 'Medicamentos para sintomas e suporte multidisciplinar.' },
+                { n: 'Acidente vascular cerebral (AVC)', c: 'Neurológicas', s: 'Fraqueza súbita, dificuldade de fala, perda de equilíbrio', d: 'Interrupção do fluxo sanguíneo cerebral, podendo ser isquêmico ou hemorrágico.', f: 'Hipertensão, tabagismo, diabetes e histórico familiar.', t: 'Tratamento imediato, reabilitação e controle de fatores de risco.' },
+                { n: 'Infarto do miocárdio', c: 'Cardiovasculares', s: 'Dor no peito, falta de ar, sudorese', d: 'Morte de parte do músculo cardíaco devido à obstrução de artéria coronária.', f: 'Tabagismo, hipertensão, colesterol elevado e sedentarismo.', t: 'Atendimento de emergência, medicamentos anticoagulantes e reabilitação cardíaca.' },
+                { n: 'Câncer de mama', c: 'Oncológicas', s: 'Nódulo na mama, alteração na pele, secreção mamilar', d: 'Tumor maligno que se origina nas células da mama.', f: 'Idade avançada, histórico familiar e fatores hormonais.', t: 'Cirurgia, quimioterapia, radioterapia e terapias hormonais.' },
+                { n: 'Câncer de próstata', c: 'Oncológicas', s: 'Dificuldade para urinar, dor pélvica', d: 'Câncer que se desenvolve na glândula prostática.', f: 'Idade avançada, histórico familiar e etnia.', t: 'Vigilância ativa, cirurgia, radioterapia e terapias hormonais.' },
+                { n: 'Câncer de pulmão', c: 'Oncológicas', s: 'Tosse persistente, falta de ar, dor torácica', d: 'Tumor maligno que afeta os pulmões.', f: 'Tabagismo, exposição a poluentes e histórico familiar.', t: 'Cirurgia, quimioterapia, radioterapia e terapias alvo.' },
+                { n: 'Osteoporose', c: 'Musculoesqueléticas', s: 'Fraturas frequentes, dor óssea', d: 'Doença caracterizada por diminuição da densidade óssea e aumento do risco de fraturas.', f: 'Idade avançada, menopausa, sedentarismo e dieta pobre em cálcio.', t: 'Suplementação de cálcio e vitamina D, exercícios físicos e medicamentos.' },
+                { n: 'Osteoartrite', c: 'Musculoesqueléticas', s: 'Dor nas articulações, rigidez', d: 'Degeneração da cartilagem articular, levando a dor e limitação de movimento.', f: 'Idade avançada, sobrepeso e lesões articulares anteriores.', t: 'AINEs, fisioterapia e, em casos graves, cirurgia articular.' },
+                { n: 'Doença celíaca', c: 'Gastrointestinais', s: 'Diarreia crônica, perda de peso, distensão abdominal', d: 'Intolerância permanente ao glúten, levando a danos na mucosa intestinal.', f: 'Fatores genéticos e ambientais.', t: 'Dieta rigorosa sem glúten por toda a vida.' },
+                { n: 'Doença inflamatória intestinal', c: 'Gastrointestinais', s: 'Diarreia com sangue, dor abdominal, febre', d: 'Inflamação crônica do trato gastrointestinal, incluindo Doença de Crohn e colite ulcerativa.', f: 'Fatores genéticos e ambientais.', t: 'Medicamentos imunossupressores, dieta e, em casos graves, cirurgia.' },
+                { n: 'Síndrome do intestino irritável', c: 'Gastrointestinais', s: 'Dor abdominal, distensão, alterações no hábito intestinal', d: 'Distúrbio funcional do intestino, sem causa orgânica identificável.', f: 'Estresse, dieta inadequada e fatores emocionais.', t: 'Mudanças na dieta, controle do estresse e medicamentos sintomáticos.' },
+                { n: 'Fibromialgia', c: 'Musculoesqueléticas', s: 'Dor muscular generalizada, fadiga, distúrbios do sono', d: 'Síndrome caracterizada por dor musculoesquelética difusa e sensibilidade aumentada.', f: 'Fatores genéticos, estresse e infecções anteriores.', t: 'Exercícios físicos, medicamentos analgésicos e técnicas de relaxamento.' },
+                { n: 'Lúpus eritematoso sistêmico', c: 'Autoimunes', s: 'Erupções cutâneas, dor nas articulações, fadiga', d: 'Doença autoimune que pode afetar múltiplos órgãos.', f: 'Mais comum em mulheres jovens e de meia-idade.', t: 'Medicamentos imunossupressores e monitoramento regular.' },
+                { n: 'Esclerose múltipla', c: 'Neurológicas', s: 'Fraqueza muscular, distúrbios visuais, formigamento', d: 'Doença autoimune que afeta o sistema nervoso central.', f: 'Mais comum em mulheres jovens.', t: 'Medicamentos modificadores da doença e fisioterapia.' },
+                { n: 'Parkinson', c: 'Neurológicas', s: 'Tremores, rigidez muscular, bradicinesia', d: 'Doença neurodegenerativa que afeta o movimento.', f: 'Idade avançada e fatores genéticos.', t: 'Medicamentos dopaminérgicos e fisioterapia.' },
+                { n: 'Doença arterial periférica', c: 'Cardiovasculares', s: 'Dor nas pernas ao caminhar, úlceras nos pés', d: 'Redução do fluxo sanguíneo para os membros inferiores.', f: 'Tabagismo, diabetes e hipertensão.', t: 'Mudanças no estilo de vida, medicamentos e, em casos graves, cirurgia.' },
+                { n: 'Acidente vascular cerebral isquêmico', c: 'Neurológicas', s: 'Fraqueza súbita, dificuldade de fala, perda de equilíbrio', d: 'Bloqueio de uma artéria cerebral, interrompendo o fluxo sanguíneo.', f: 'Hipertensão, diabetes e colesterol elevado.', t: 'Trombólise, anticoagulantes e reabilitação.' },
+                { n: 'Acidente vascular cerebral hemorrágico', c: 'Neurológicas', s: 'Dor de cabeça súbita, náuseas, perda de consciência', d: 'Ruptura de um vaso sanguíneo cerebral, causando sangramento.', f: 'Hipertensão e aneurismas cerebrais.', t: 'Controle da pressão arterial e, em alguns casos, cirurgia.' },
+                { n: 'Hipotireoidismo', c: 'Endócrinas', s: 'Cansaço, ganho de peso, depressão', d: 'Produção insuficiente de hormônios pela glândula tireoide.', f: 'Mais comum em mulheres e com o aumento da idade.', t: 'Reposição hormonal com levotiroxina.' },
+                { n: 'Hipertireoidismo', c: 'Endócrinas', s: 'Perda de peso, tremores, ansiedade', d: 'Produção excessiva de hormônios pela glândula tireoide.', f: 'Mais comum em mulheres jovens.', t: 'Antitireoidianos, betabloqueadores e, em alguns casos, iodo radioativo.' },
+                { n: 'Hiperlipidemia', c: 'Cardiovasculares', s: 'Normalmente assintomática', d: 'Níveis elevados de lipídios no sangue, especialmente colesterol e triglicerídeos.', f: 'Dieta rica em gorduras, sedentarismo e genética.', t: 'Mudanças na dieta, atividade física e medicamentos hipolipemiantes.' },
+                { n: 'Síndrome metabólica', c: 'Endócrinas', s: 'Obesidade abdominal, hipertensão, resistência à insulina', d: 'Conjunto de condições que aumentam o risco de doenças cardíacas e diabetes.', f: 'Sedentarismo, dieta inadequada e genética.', t: 'Mudanças no estilo de vida e controle dos fatores de risco(pressão, glicemia, colesterol).' },
+                { n: 'Câncer de estômago', c: 'Oncológicas', s: 'Náusea, vômito, dor abdominal, perda de apetite', d: 'Tumor maligno que afeta o revestimento do estômago.', f: 'Infecção por H. pylori, dieta rica em alimentos processados e fatores genéticos.', t: 'Cirurgia, quimioterapia e radioterapia.' },
+                { n: 'Câncer de fígado', c: 'Oncológicas', s: 'Náusea, dor abdominal, icterícia', d: 'Tumor maligno que afeta o fígado.', f: 'Hepatite crônica, cirrose e consumo excessivo de álcool.', t: 'Cirurgia, transplante hepático e terapias alvo.' },
+                { n: 'Câncer de pâncreas', c: 'Oncológicas', s: 'Náusea, dor abdominal, icterícia, perda de peso', d: 'Tumor maligno que surge no pâncreas.', f: 'Tabagismo, obesidade e histórico familiar.', t: 'Cirurgia, quimioterapia e radioterapia.' },
+                { n: 'Câncer de ovário', c: 'Oncológicas', s: 'Náusea, dor pélvica, distensão abdominal', d: 'Tumor maligno que se desenvolve nos ovários.', f: 'Histórico familiar, idade avançada e fatores hormonais.', t: 'Cirurgia, quimioterapia e terapias alvo.' },
+                { n: 'Câncer de esôfago', c: 'Oncológicas', s: 'Náusea, dificuldade para engolir, dor torácica', d: 'Tumor maligno que afeta o esôfago.', f: 'Tabagismo, alcoolismo e refluxo crônico.', t: 'Cirurgia, quimioterapia e radioterapia.' },
+                { n: 'Gastrite', c: 'Gastrointestinais', s: 'Náusea, dor abdominal, vômito', d: 'Inflamação da mucosa do estômago.', f: 'Uso excessivo de anti-inflamatórios, álcool, infecção por H. pylori.', t: 'Inibidores de bomba de prótons, antibióticos e mudança alimentar.' },
+                { n: 'Gastroenterite viral', c: 'Infecciosas', s: 'Náusea, vômito, diarreia, febre', d: 'Infecção viral que causa inflamação no trato gastrointestinal.', f: 'Contaminação por água ou alimentos.', t: 'Hidratação, repouso e tratamento sintomático.' },
+                { n: 'Doença pulmonar intersticial', c: 'Respiratórias', s: 'Falta de ar progressiva, tosse seca, fadiga', d: 'Grupo de doenças que causam cicatrizes no tecido pulmonar, dificultando a respiração.', f: 'Pode ser causada por exposições ambientais, autoimunes ou idiopática.', t: 'Oxigenoterapia, medicamentos antifibróticos e reabilitação pulmonar.' },
+                { n: 'Hepatite A', c: 'Infecciosas', s: 'Náusea, fadiga, dor abdominal, icterícia', d: 'Infecção viral que afeta o fígado.', f: 'Ingestão de água ou alimentos contaminados.', t: 'Tratamento de suporte e repouso.' },
+                { n: 'Hepatite B', c: 'Infecciosas', s: 'Náusea, dor abdominal, urina escura, icterícia', d: 'Infecção viral crônica ou aguda do fígado.', f: 'Transmissão sexual, sangue contaminado e de mãe para filho.', t: 'Antivirais e monitoramento hepático.' },
+                { n: 'Insuficiência hepática', c: 'Hepáticas', s: 'Náusea, confusão mental, fadiga, icterícia', d: 'Perda grave da função do fígado.', f: 'Hepatite crônica, abuso de álcool e cirrose.', t: 'Tratamento hospitalar, transplante hepático em casos graves.'}
+            ]
+
+            const s = document.getElementById('s');
+            const cat = document.getElementById('cat');
+            const list = document.getElementById('list');
+            const modal = document.getElementById('modal');
+            const mtitle = document.getElementById('mtitle');
+            const mtag = document.getElementById('mtag');
+            const msyn = document.getElementById('msyn');
+            const mdesc = document.getElementById('mdesc');
+            const mfast = document.getElementById('mfast');
+            const mtreat = document.getElementById('mtreat');
+            const close = document.getElementById('close');
+            const exp = document.getElementById('exp');
+
+            const cats = [...new Set(D.map(x => x.c))];
+            cat.innerHTML = '<option value="">Todas as categorias</option>'; // garante opção inicial
+            cats.forEach(c => {
+                const o = document.createElement('option');
+                o.value = c;
+                o.textContent = c;
+                cat.appendChild(o);
+            });
+            function render(arr) {
+                list.innerHTML = '';
+                arr.forEach(x => {
+                    const e = document.createElement('article');
+                    e.className = 'card';
+                    e.innerHTML = `
+                    <span class="tag">${x.c}</span>
+                    <h3>${x.n}</h3>
+                    <p class="meta">${x.s}</p>
+                    <p class="desc">${x.d.slice(0, 120)}...</p>
+                    <div class="center" style="margin-top:12px">
+                        <button class="btn" style=".btn {
+                        border-radius: 20px solid #fff;
+                        background-color: rgb(9, 17, 121);
+                        color: #fff;
+                        }" data-name="${x.n}">Detalhes</button>
+                    </div>`;
+                    list.appendChild(e);
+                });
+
+                document.querySelectorAll('.btn[data-name]').forEach(b =>
+                    b.onclick = ev => openDetail(ev.target.dataset.name)
+                );
+            }
+
+            function openDetail(name) {
+                const it = D.find(x => x.n === name);
+                if (!it) return;
+                mtitle.textContent = it.n;
+                mtag.textContent = it.c;
+                msyn.textContent = it.s;
+                mdesc.textContent = it.d;
+                mfast.textContent = it.f;
+                mtreat.textContent = it.t;
+                modal.classList.add('active');
+            }
+
+            function apply() {
+                const q = s.value.trim().toLowerCase();
+                const c = cat.value;
+
+                const out = D.filter(x =>
+                    (!c || x.c === c) &&
+                    (!q || x.n.toLowerCase().includes(q) || x.s.toLowerCase().includes(q) || x.d.toLowerCase().includes(q))
+                );
+
+                render(out);
+            }
+            s.oninput = apply;
+            cat.onchange = apply;
+
+            apply();
+
+            close.onclick = () => modal.classList.remove('active');
+            modal.onclick = e => { if (e.target === modal) modal.classList.remove('active'); }
+
+            exp.onclick = () => {
+                const rows = [['Nome', 'Categoria', 'Sintomas', 'Descrição', 'Fato rapido', 'Tratamento']];
+                D.forEach(x => rows.push([x.n, x.c, x.s, x.d, x.f, x.t]));
+                const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+                a.download = 'doencas_cronicas.csv';
+                a.click();
+                URL.revokeObjectURL(a.href);
+            }
+
+            render(D);
+
+        });
+    </script>
+
+    {% endblock %}

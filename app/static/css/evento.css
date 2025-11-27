@@ -1,0 +1,196 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+.header {
+    padding: 25px 20px;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    color: #003686;
+    font-family: Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.header p {
+    font-size: 1.3rem;
+    color: #313131;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.month-section {
+    background: white;
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.month-title {
+    font-size: 1.8em;
+    color: #2c5aa0;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #2c5aa0;
+    text-transform: capitalize;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: #2c5aa0;
+    color: white;
+}
+
+th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+th:first-child {
+    width: 25%;
+}
+
+tbody tr {
+    border-bottom: 1px solid #e0e0e0;
+    transition: background-color 0.3s ease;
+}
+
+tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+td {
+    padding: 20px 15px;
+    vertical-align: top;
+}
+
+.event-date {
+    font-weight: 600;
+    color: #2c5aa0;
+    font-size: 1em;
+}
+
+.event-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+    font-size: 1.05em;
+}
+
+.event-location {
+    color: #666;
+    font-size: 0.95em;
+    margin-top: 5px;
+}
+
+.event-link {
+    display: inline-block;
+    margin-top: 8px;
+    color: #2c5aa0;
+    text-decoration: none;
+    font-size: 0.9em;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.event-link:hover {
+    color: #1e3a5f;
+    text-decoration: underline;
+}
+
+.no-events {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    font-style: italic;
+}
+
+
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 1.8em;
+    }
+
+    .month-section {
+        padding: 20px;
+    }
+
+    table {
+        font-size: 0.9em;
+    }
+
+    th, td {
+        padding: 12px 10px;
+    }
+
+    .month-title {
+        font-size: 1.4em;
+    }
+}
+
+@media (max-width: 480px) {
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    thead tr {
+        display: none;
+    }
+
+    tr {
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px;
+    }
+
+    td {
+        text-align: left;
+        padding: 10px;
+        border: none;
+    }
+
+    td:first-child {
+        background-color: #f0f4f8;
+        font-weight: bold;
+    }
+}
+
+.header {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 30px;
+    text-align: center;
+    background-color: #f2f2f2;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }

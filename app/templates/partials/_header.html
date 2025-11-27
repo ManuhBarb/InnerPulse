@@ -1,0 +1,38 @@
+<nav class="navbar navbar-expand-lg custom-navbar">
+  <div class="container-fluid">
+
+    <!-- LINKS CENTRAIS -->
+    <div class="collapse navbar-collapse" id="navbarText">
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/doenca/' %}active{% endif %}" href="{% url 'doenca' %}">Doenças
+            Crônicas</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/calcule/' %}active{% endif %}"
+            href="{% url 'calcule' %}">Calcule</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'index' %}">INNER PULSE</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/evento/' %}active{% endif %}" href="{% url 'evento' %}">Eventos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/agendamento/' %}active{% endif %}"
+            href="{% url 'agendamento' %}">Agendamentos</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="login-wrapper ms-auto">
+      {% if user.is_authenticated and user.usuario %}
+      <a href="{% url 'perfil' %}" class="botao-login">{{ user.usuario.nome }}</a>
+      {% else %}
+      <a href="{% url 'login' %}" class="btn login-btn">Login</a>
+      {% endif %}
+
+    </div>
+
+
+</nav>

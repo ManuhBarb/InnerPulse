@@ -1,0 +1,103 @@
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+/* O footer inteiro */
+.geral {
+  margin-top: auto;
+}
+
+.geral {
+  background-color: #000040;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.geral .linha {
+  background-color: #4424d3;
+  text-align: center;
+  padding: 10px;
+}
+
+.geral .corpo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 30px 50px;
+}
+
+.geral .bloco h6 {
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.geral .bloco h6::after {
+  content: "";
+  display: block;
+  width: 50px;
+  height: 2px;
+  background-color: #4424d3;
+  margin-top: 5px;
+}
+
+.geral .bloco p,
+.geral .bloco a {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #ddd;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 8px;
+  transition: 0.3s;
+}
+
+.geral .bloco a:hover {
+  color: #4424d3;
+}
+
+.geral .social {
+  background-color: #331baf;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.geral .social a {
+  color: #fff;
+  font-size: 18px;
+  margin: 0 10px;
+  display: inline-block;
+  transition: 0.3s;
+}
+
+.geral .social a:hover {
+  color: #4424d3;
+}
+
+.geral .copy {
+  text-align: center;
+  background-color: #110965;
+  padding: 10px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+.bloco1 {
+  margin-left: 100px;
+}
+
+.bloco2 {
+  margin-left: 40px;
+}
+
+.bloco3 {
+  margin-left: 40px;
+}

@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persona</title>
+    <link rel="stylesheet" href="{% static 'css/perfil.css' %}">
+</head>
+
+<body>
+
+    <button onclick="window.history.back()" class="btn-voltar">←-</button>
+
+    <div class="perfil-box">
+        <h2>Meu Perfil</h2>
+
+        <div class="item"><strong>Nome:</strong> {{ usuario.nome }}</div>
+        <div class="item"><strong>Data de nascimento:</strong> {{ usuario.data_nasc }}</div>
+        <div class="item"><strong>CPF:</strong> {{ usuario.cpf }}</div>
+        <div class="item"><strong>Telefone:</strong> {{ usuario.telefone }}</div>
+        <div class="item"><strong>Email:</strong> {{ usuario.email }}</div>
+        <div class="item"><strong>Doença:</strong> {{ usuario.doenca }}</div>
+        <div class="item"><strong>Cidade:</strong> {{ usuario.cidade.nome }}</div>
+        <div class="item"><strong>Ocupação:</strong> {{ usuario.ocupacao.nome }}</div>
+
+        <a class="logout" href="{% url 'logout' %}">Logout</a>
+    </div>
+
+</body>
+</html>

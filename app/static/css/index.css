@@ -1,0 +1,51 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.index {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    background: url("../imagens/pgIndex1.png") no-repeat center 35%;
+    background-size: cover;
+    position: relative;
+    color: #000000;
+}
+
+.display-4 {
+    font-size: 75px;
+    text-transform: uppercase;
+    color: #003686;
+    font-family: Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.princ {
+    font-size: 1.3rem;
+    color: #313131;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    font-family: unset !important;
+
+}
+
+.porra {
+    text-align: left !important;
+    background: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    position: absolute;
+    left: 5%;
+    top: 50%;
+    transform: translateY(-40%);
+    max-width: 50% !important;
+    width: 100%;
+}
+
+.apresentacao {
+    margin: 5%;
+    text-align: justify;
+    color: #000;
+    font-size: 18px;
+}

@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="header">
+    <h1>Agenda de Eventos</h1>
+    <p>Congressos, Simpósios e Eventos na Área da Saúde</p>
+</div>
+
+<div class="container" id="eventsContainer"></div>
+
+<script>
+    const eventos = JSON.parse(`[
+        {% for e in eventos %}
+            {
+                "dataInicio": "{{ e.data_inicio|date:'Y-m-d' }}",
+                "dataFim": "{{ e.data_termino|date:'Y-m-d' }}",
+                "titulo": "{{ e.titulo|escapejs }}",
+                "local": "{{ e.local|escapejs }}",
+                "link": "{{ e.link|default:''|escapejs }}"
+            }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ]`);
+
+    function eventoAtivo(dataFim) {
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        const dataFimEvento = new Date(dataFim);
+        dataFimEvento.setHours(23, 59, 59, 999);
+        return dataFimEvento >= hoje;
+    }
+
+    function formatarData(dataInicio, dataFim) {
+        const [anoI, mesI, diaI] = dataInicio.split('-');
+        const [anoF, mesF, diaF] = dataFim.split('-');
+
+        if (dataInicio === dataFim) {
+            return `${diaI}/${mesI}/${anoI.slice(2)}`;
+        } else {
+            return `${diaI}/${mesI}/${anoI.slice(2)} - ${diaF}/${mesF}/${anoF.slice(2)}`;
+        }
+    }
+
+    function obterNomeMes(mes, ano) {
+        const meses = [
+            "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+            "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+        ];
+        return `${meses[mes]}/${ano}`;
+    }
+
+    function renderizarEventos() {
+        const container = document.getElementById("eventsContainer");
+
+        const eventosAtivos = eventos.filter(e => eventoAtivo(e.dataFim));
+
+        if (eventosAtivos.length === 0) {
+            container.innerHTML = `<div class="no-events">Não há eventos futuros programados no momento.</div>`;
+            return;
+        }
+
+        const eventosPorMes = {};
+
+        eventosAtivos.forEach(ev => {
+            const [ano, mes] = ev.dataInicio.split("-");
+            const chave = `${ano}-${mes}`;
+
+            if (!eventosPorMes[chave]) {
+                eventosPorMes[chave] = [];
+            }
+            eventosPorMes[chave].push(ev);
+        });
+
+        const mesesOrdenados = Object.keys(eventosPorMes).sort();
+
+        let html = "";
+
+        mesesOrdenados.forEach(chave => {
+            const [ano, mes] = chave.split("-");
+            const nomeMes = obterNomeMes(parseInt(mes) - 1, ano);
+            const lista = eventosPorMes[chave];
+
+            html += `
+                <div class="month-section">
+                    <h2 class="month-title">${nomeMes}</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Evento</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            lista.forEach(ev => {
+                const dataFmt = formatarData(ev.dataInicio, ev.dataFim);
+                html += `
+                    <tr>
+                        <td class="event-date">${dataFmt}</td>
+                        <td>
+                            <div class="event-title">${ev.titulo}</div>
+                            <div class="event-location">${ev.local}</div>
+                            <a href="${ev.link}" class="event-link">Saiba mais →</a>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    }
+
+    renderizarEventos();
+    setInterval(renderizarEventos, 24 * 60 * 60 * 1000);
+</script>
+
+{% endblock %}

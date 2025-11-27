@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container-login">
+
+
+    <div class="box-login">
+        <h2>Somos o time InnerPulse</h2>
+        <p>Por favor, faça login com a sua conta</p>
+
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+
+        <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+
+            <div class="campo">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="text">
+            </div>
+
+            <div class="campo">
+                <label for="senha">Senha</label>
+                <input id="senha" name="senha" type="password">
+            </div>
+
+            <button type="submit" class="btn-login">Login</button>
+        </form>
+
+        <div class="link-criar">
+            <p>Não tem uma conta?</p>
+            <a href="{% url 'cadastro' %}">Criar nova conta</a>
+        </div>
+    </div>
+
+
+    <div class="texto-info">
+        <h1>Nós somos mais que uma simples comunidade</h1>
+        <p>
+            O projeto InnerPulse foi pensado para apoiar pessoas com doenças crônicas e seus familiares,
+            oferecendo informações, apoio emocional e dicas práticas. Com o objetivo de ser um sistema simples
+            e acessível, buscamos facilitar o dia a dia dos usuários.
+        </p>
+    </div>
+
+</div>
+
+{% endblock %}
