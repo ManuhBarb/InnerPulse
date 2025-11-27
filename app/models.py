@@ -27,7 +27,7 @@ class Usuario(models.Model):
         User, 
         on_delete=models.CASCADE, 
         related_name="usuario",
-        primary_key=True
+        # primary_key=True
     )
     nome = models.CharField(max_length=100, blank=True, null=True)
     data_nasc = models.DateField(blank=True, null=True)
