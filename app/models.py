@@ -1,6 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+import json
+
 
 class Cidade(models.Model):
     nome = models.CharField(max_length=100, verbose_name="Nome da cidade")
@@ -52,7 +58,6 @@ class Agendamento(models.Model):
     cidade = models.ForeignKey(Cidade, on_delete=models.CASCADE, verbose_name="Cidade")
     data_agend = models.DateField(verbose_name="Data do Agendamento")
     horario = models.TimeField(verbose_name="Horário")
-    endereco = models.CharField(max_length=255, verbose_name="Endereço")
 
     def __str__(self):
         return f"Agendamento de {self.usuario} em {self.data_agend}"
@@ -143,3 +148,35 @@ class ResultadoCalculadora(models.Model):
     
     def __str__(self):
         return f"{self.usuario.username} - {self.tipo_calculo} - {self.data_criacao.strftime('%d/%m/%Y')}"
+    
+    @login_required
+    def listar_agendamentos(request):
+        usuario = Usuario.objects.get(user=request.user)
+        agendamentos = Agendamento.objects.filter(usuario=usuario).order_by("data_agend", "horario")
+        return render(request, "agenda.html", {"agendamentos": agendamentos})
+
+    @login_required
+    @csrf_exempt
+    def salvar_agendamento(request):
+        if request.method == "POST":
+            data = json.loads(request.body)
+            usuario = Usuario.objects.get(user=request.user)
+            titulo = data.get("titulo", "")
+            data_agend = data.get("data")
+            hora = data.get("hora")
+
+            # Para simplificar, vamos pegar primeira ocupação e cidade do usuário
+            ocupacao = usuario.ocupacao
+            cidade = usuario.cidade
+
+            # Cria agendamento
+            Agendamento.objects.create(
+                usuario=usuario,
+                ocupacao=ocupacao,
+                cidade=cidade,
+                data_agend=data_agend,
+                horario=hora
+            )
+            return JsonResponse({"status": "ok"})
+        return JsonResponse({"status": "erro"}, status=400)
+        

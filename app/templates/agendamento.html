@@ -2,6 +2,8 @@
 {% load static %}
 {% block content %}
 
+<input type="hidden" id="auth-status" value="{% if user.is_authenticated %}1{% else %}0{% endif %}">
+
 <div class="ip-container">
     <div class="ip-calendario">
         <h2>Calendário</h2>
@@ -18,8 +20,13 @@
         <input type="text" id="dataSelecionada" readonly placeholder="Nenhuma data">
         <input type="text" id="tituloEvento" placeholder="Título do compromisso">
         <input type="time" id="horaEvento">
+
+        {% if user.is_authenticated %}
         <button onclick="adicionarEvento()">Salvar compromisso</button>
-        
+        {% else %}
+        <button onclick="redirecionarParaLogin()">Faça login para salvar</button>
+        {% endif %}
+
         <div class="ip-eventos">
             <h3>Compromissos salvos</h3>
             <div id="listaEventos"></div>
@@ -28,195 +35,197 @@
 </div>
 
 <script>
-    // Chave única baseada no ID do usuário
-    const usuarioID = "{{ request.user.id }}";
-    const STORAGE_KEY = "agendamentos_user_" + usuarioID;
+const usuarioAutenticado = document.getElementById('auth-status').value === '1';
 
-    let eventos = [];
-    let dataAtual = new Date();
+function redirecionarParaLogin() {
+    alert("Você precisa estar logado para salvar compromissos.");
+    window.location.href = "{% url 'login' %}?next={{ request.path }}";
+}
 
-    // Carregar eventos do localStorage
-    function carregarEventos() {
-        const dados = localStorage.getItem(STORAGE_KEY);
-        eventos = dados ? JSON.parse(dados) : [];
-    }
+let eventos = [];
+let dataAtual = new Date();
 
-    // Salvar eventos no localStorage
-    function salvarEventos() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(eventos));
-    }
+function preencherSelects() {
+    const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+    document.getElementById("mesSelect").innerHTML = '';
+    document.getElementById("anoSelect").innerHTML = '';
 
-    // Preencher selects de mês e ano
-    function preencherSelects() {
-        const meses = [
-            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-        ];
-
-        // Limpar selects
-        document.getElementById("mesSelect").innerHTML = '';
-        document.getElementById("anoSelect").innerHTML = '';
-
-        // Adicionar meses
-        meses.forEach((mes, index) => {
-            const option = document.createElement("option");
-            option.value = index;
-            option.textContent = mes;
-            if (index === dataAtual.getMonth()) option.selected = true;
-            document.getElementById("mesSelect").appendChild(option);
-        });
-
-        // Adicionar anos (2025-2030)
-        for (let ano = 2025; ano <= 2030; ano++) {
-            const option = document.createElement("option");
-            option.value = ano;
-            option.textContent = ano;
-            if (ano === dataAtual.getFullYear()) option.selected = true;
-            document.getElementById("anoSelect").appendChild(option);
-        }
-    }
-
-    // Formatar data DD/MM/YYYY
-    function formatarData(dia, mes, ano) {
-        return `${dia.toString().padStart(2, '0')}/${(mes).toString().padStart(2, '0')}/${ano}`;
-    }
-
-    // Verificar se há evento em uma data
-    function temEventoNaData(dataStr) {
-        return eventos.some(evento => evento.data === dataStr);
-    }
-
-    // Gerar calendário
-    function gerarCalendario() {
-        const calendario = document.getElementById("calendario");
-        calendario.innerHTML = '';
-
-        const mes = parseInt(document.getElementById("mesSelect").value);
-        const ano = parseInt(document.getElementById("anoSelect").value);
-
-        // Primeiro dia do mês
-        const primeiroDia = new Date(ano, mes, 1).getDay();
-        const ultimoDia = new Date(ano, mes + 1, 0).getDate();
-
-        // Dias vazios no início
-        for (let i = 0; i < primeiroDia; i++) {
-            const diaVazio = document.createElement("div");
-            diaVazio.className = "ip-day ip-day--empty";
-            calendario.appendChild(diaVazio);
-        }
-
-        // Dias do mês
-        for (let dia = 1; dia <= ultimoDia; dia++) {
-            const diaElement = document.createElement("div");
-            diaElement.className = "ip-day";
-            diaElement.textContent = dia;
-
-            const dataStr = formatarData(dia, mes + 1, ano);
-
-            // Marcar se tem evento
-            if (temEventoNaData(dataStr)) {
-                diaElement.classList.add("ip-day-evento");
-            }
-
-            // Selecionar data
-            diaElement.addEventListener("click", function() {
-                document.querySelectorAll(".ip-day").forEach(d => d.classList.remove("ip-selected"));
-                this.classList.add("ip-selected");
-                document.getElementById("dataSelecionada").value = dataStr;
-            });
-
-            calendario.appendChild(diaElement);
-        }
-    }
-
-    // Atualizar lista de eventos
-    function atualizarLista() {
-        const lista = document.getElementById("listaEventos");
-        lista.innerHTML = '';
-
-        if (eventos.length === 0) {
-            lista.innerHTML = '<p style="color:#666;">Nenhum compromisso salvo</p>';
-            return;
-        }
-
-        // Ordenar por data (mais recente primeiro)
-        eventos.sort((a, b) => {
-            const [diaA, mesA, anoA] = a.data.split('/').map(Number);
-            const [diaB, mesB, anoB] = b.data.split('/').map(Number);
-            return new Date(anoB, mesB - 1, diaB) - new Date(anoA, mesA - 1, diaA);
-        });
-
-        // Adicionar cada evento
-        eventos.forEach((evento, index) => {
-            const item = document.createElement("div");
-            item.className = "ip-evento-item";
-
-            const texto = document.createElement("span");
-            const hora = evento.hora === "Sem horário" ? "" : ` - ${evento.hora}`;
-            texto.innerHTML = `<strong>${evento.data}</strong>${hora} - ${evento.titulo}`;
-
-            const botao = document.createElement("button");
-            botao.className = "ip-remover";
-            botao.textContent = "X";
-            botao.onclick = function() {
-                if (confirm("Excluir este compromisso?")) {
-                    eventos.splice(index, 1);
-                    salvarEventos();
-                    atualizarLista();
-                    gerarCalendario();
-                }
-            };
-
-            item.appendChild(texto);
-            item.appendChild(botao);
-            lista.appendChild(item);
-        });
-    }
-
-    // Adicionar novo evento
-    function adicionarEvento() {
-        const data = document.getElementById("dataSelecionada").value;
-        const titulo = document.getElementById("tituloEvento").value.trim();
-        let hora = document.getElementById("horaEvento").value;
-
-        // Validações
-        if (!data) return alert("Selecione uma data no calendário.");
-        if (!titulo) return alert("Digite um título para o compromisso.");
-
-        // Se não tiver hora, define como "Sem horário"
-        if (!hora) hora = "Sem horário";
-
-        // Adicionar evento
-        eventos.push({
-            data: data,
-            titulo: titulo,
-            hora: hora
-        });
-
-        // Salvar e atualizar
-        salvarEventos();
-        atualizarLista();
-        gerarCalendario();
-
-        // Limpar formulário
-        document.getElementById("tituloEvento").value = "";
-        document.getElementById("horaEvento").value = "";
-    }
-
-    // Inicializar
-    document.addEventListener("DOMContentLoaded", function() {
-        carregarEventos();
-        preencherSelects();
-        gerarCalendario();
-        atualizarLista();
-
-        // Event listeners para mudança de mês/ano
-        document.getElementById("mesSelect").addEventListener("change", gerarCalendario);
-        document.getElementById("anoSelect").addEventListener("change", gerarCalendario);
+    meses.forEach((mes,index)=>{
+        const option=document.createElement("option");
+        option.value=index;
+        option.textContent=mes;
+        if(index===dataAtual.getMonth()) option.selected=true;
+        document.getElementById("mesSelect").appendChild(option);
     });
 
-    // Exportar função para o botão
-    window.adicionarEvento = adicionarEvento;
+    for(let ano=2025;ano<=2030;ano++){
+        const option=document.createElement("option");
+        option.value=ano;
+        option.textContent=ano;
+        if(ano===dataAtual.getFullYear()) option.selected=true;
+        document.getElementById("anoSelect").appendChild(option);
+    }
+}
+
+function formatarData(dia,mes,ano){
+    return `${dia.toString().padStart(2,'0')}/${(mes).toString().padStart(2,'0')}/${ano}`;
+}
+
+function temEventoNaData(dataStr){
+    return eventos.some(evento=>evento.data===dataStr);
+}
+
+function gerarCalendario(){
+    const calendario=document.getElementById("calendario");
+    calendario.innerHTML='';
+    const mes=parseInt(document.getElementById("mesSelect").value);
+    const ano=parseInt(document.getElementById("anoSelect").value);
+
+    const primeiroDia=new Date(ano,mes,1).getDay();
+    const ultimoDia=new Date(ano,mes+1,0).getDate();
+
+    for(let i=0;i<primeiroDia;i++){
+        const diaVazio=document.createElement("div");
+        diaVazio.className="ip-day ip-day--empty";
+        calendario.appendChild(diaVazio);
+    }
+
+    for(let dia=1;dia<=ultimoDia;dia++){
+        const diaElement=document.createElement("div");
+        diaElement.className="ip-day";
+        diaElement.textContent=dia;
+
+        const dataStr=formatarData(dia,mes+1,ano);
+        if(temEventoNaData(dataStr)) diaElement.classList.add("ip-day-evento");
+
+        diaElement.addEventListener("click",function(){
+            document.querySelectorAll(".ip-day").forEach(d=>d.classList.remove("ip-selected"));
+            this.classList.add("ip-selected");
+            document.getElementById("dataSelecionada").value=dataStr;
+        });
+
+        calendario.appendChild(diaElement);
+    }
+}
+
+function atualizarLista(){
+    const lista=document.getElementById("listaEventos");
+    lista.innerHTML='';
+
+    if(eventos.length===0){
+        lista.innerHTML='<p style="color:#666;">Nenhum compromisso salvo</p>';
+        return;
+    }
+
+    eventos.sort((a,b)=>{
+        const [diaA,mesA,anoA]=a.data.split('/').map(Number);
+        const [diaB,mesB,anoB]=b.data.split('/').map(Number);
+        return new Date(anoB,mesB-1,diaB)-new Date(anoA,mesA-1,diaA);
+    });
+
+    eventos.forEach((evento,index)=>{
+        const item=document.createElement("div");
+        item.className="ip-evento-item";
+
+        const texto=document.createElement("span");
+        const hora=evento.hora==="Sem horário"?"":` - ${evento.hora}`;
+        texto.innerHTML=`<strong>${evento.data}</strong>${hora} - ${evento.titulo}`;
+
+        const botao=document.createElement("button");
+        botao.className="ip-remover";
+        botao.textContent="X";
+
+        botao.onclick=function(){
+            if(!usuarioAutenticado){
+                alert("Você precisa estar logado para excluir compromissos.");
+                redirecionarParaLogin();
+                return;
+            }
+
+            if(confirm("Excluir este compromisso?")){
+                fetch(`/deletar-agendamento/${evento.id}/`,{
+                    method:"POST",
+                    headers:{
+                        "X-CSRFToken":"{{ csrf_token }}"
+                    }
+                }).then(res=>res.json()).then(res=>{
+                    if(res.status==="ok"){
+                        eventos.splice(index,1);
+                        atualizarLista();
+                        gerarCalendario();
+                    } else {
+                        alert("Erro ao excluir compromisso.");
+                    }
+                });
+            }
+        };
+
+        item.appendChild(texto);
+        item.appendChild(botao);
+        lista.appendChild(item);
+    });
+}
+
+function carregarEventos(){
+    if(!usuarioAutenticado) return;
+    fetch("{% url 'salvar_agendamento' %}")
+        .then(res=>res.json())
+        .then(data=>{
+            eventos=data.agendamentos.map(a=>({
+                id:a.id,
+                data:a.data_agend,
+                titulo:a.titulo,
+                hora:a.horario
+            }));
+            atualizarLista();
+            gerarCalendario();
+        });
+}
+
+function adicionarEvento(){
+    if(!usuarioAutenticado){
+        alert("Você precisa estar logado para salvar compromissos.");
+        redirecionarParaLogin();
+        return;
+    }
+
+    const data=document.getElementById("dataSelecionada").value;
+    const titulo=document.getElementById("tituloEvento").value.trim();
+    let hora=document.getElementById("horaEvento").value;
+    if(!data) return alert("Selecione uma data no calendário.");
+    if(!titulo) return alert("Digite um título para o compromisso.");
+    if(!hora) hora="Sem horário";
+
+    fetch("{% url 'salvar_agendamento' %}",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json",
+            "X-CSRFToken":"{{ csrf_token }}"
+        },
+        body:JSON.stringify({data:data,titulo:titulo,hora:hora})
+    }).then(res=>res.json())
+      .then(result=>{
+        if(result.status==="ok"){
+            eventos.push({id:result.id,data:data,titulo:titulo,hora:hora});
+            atualizarLista();
+            gerarCalendario();
+            document.getElementById("tituloEvento").value="";
+            document.getElementById("horaEvento").value="";
+        } else {
+            alert("Erro ao salvar o compromisso.");
+        }
+    });
+}
+
+document.addEventListener("DOMContentLoaded",function(){
+    preencherSelects();
+    carregarEventos();
+    document.getElementById("mesSelect").addEventListener("change",gerarCalendario);
+    document.getElementById("anoSelect").addEventListener("change",gerarCalendario);
+});
+
+window.adicionarEvento=adicionarEvento;
+window.redirecionarParaLogin=redirecionarParaLogin;
 </script>
 
 {% endblock %}

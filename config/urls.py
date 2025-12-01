@@ -4,7 +4,7 @@ from app.views import (
     IndexView, CidadesView, OcupacoesView, CadastroView, EventosView, 
     AgendamentosView, RelatoriosView, DoencasView, CalculeView, LoginView, 
     LogoutView, PerfilView, PostListView, PostDetailView, LikeCommentView, 
-    DeleteCommentView, SalvarResultadoView, MeusResultadosView, DeletarResultadoView, AgendamentosView,
+    DeleteCommentView, SalvarResultadoView, MeusResultadosView, DeletarResultadoView, salvar_agendamento,
     add_comment  # Importa a função normalmente
 )
  
@@ -31,5 +31,6 @@ urlpatterns = [
     path('meus-resultados/', MeusResultadosView.as_view(), name='meus_resultados'),
     path('deletar-resultado/<int:resultado_id>/', DeletarResultadoView.as_view(), name='deletar_resultado'),
     path('add-comment/', add_comment, name='add_comment'),
-    path('agendamentos/', AgendamentosView.as_view(), name='agendamentos'),
+    path("salvar-agendamento/", salvar_agendamento, name="salvar_agendamento"),
+
 ]

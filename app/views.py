@@ -35,12 +35,35 @@ from .models import (
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-class AgendamentosView(LoginRequiredMixin, TemplateView):
-    template_name = 'agendamentos.html'
-    
-    # Opcional: configurar redirecionamento se não estiver logado
-    login_url = '/login/'  # ajuste para sua URL de login
-    redirect_field_name = 'next'
+@login_required
+@csrf_exempt
+def salvar_agendamento(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            data_agend = data.get("data")
+            hora = data.get("hora")
+            titulo = data.get("titulo")  # Opcional: se quiser armazenar, pode criar um campo "titulo" no modelo
+
+            usuario = request.user.usuario  # Pegando o perfil Usuario
+
+            # Usando ocupacao e cidade do perfil do usuário
+            ocupacao = usuario.ocupacao
+            cidade = usuario.cidade
+
+            Agendamento.objects.create(
+                usuario=usuario,
+                ocupacao=ocupacao,
+                cidade=cidade,
+                data_agend=data_agend,
+                horario=hora
+            )
+
+            return JsonResponse({"status": "ok"})
+
+        except Exception as e:
+            return JsonResponse({"status": "erro", "mensagem": str(e)})
+
 
 @csrf_exempt
 @require_POST
