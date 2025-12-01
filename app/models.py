@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 class Cidade(models.Model):
     nome = models.CharField(max_length=100, verbose_name="Nome da cidade")
@@ -90,3 +91,55 @@ class Evento(models.Model):
     class Meta:
         verbose_name = "Evento"
         verbose_name_plural = "Eventos"
+
+class Post(models.Model):
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+
+class Comment(models.Model):
+    post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    author_name = models.CharField(max_length=100, blank=True)  # Para usuários não logados
+    text = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)
+    approved = models.BooleanField(default=True)
+    likes = models.IntegerField(default=0)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f'Comentário de {self.get_author_name()} em {self.post.title}'
+    
+    def get_author_name(self):
+        if self.author:
+            return self.author.username
+        return self.author_name or 'Anônimo'
+
+# models.py - ADICIONE no final do arquivo
+class ResultadoCalculadora(models.Model):
+    TIPO_CHOICES = [
+        ('imc', 'IMC'),
+        ('glicose', 'Glicose'),
+        ('agua', 'Hidratação Diária'),
+        ('pressao', 'Pressão Arterial'),
+    ]
+    
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    tipo_calculo = models.CharField(max_length=20, choices=TIPO_CHOICES)
+    resultado = models.JSONField()
+    data_criacao = models.DateTimeField(default=timezone.now)
+    
+    class Meta:
+        ordering = ['-data_criacao']
+        verbose_name = "Resultado da Calculadora"
+        verbose_name_plural = "Resultados da Calculadora"
+    
+    def __str__(self):
+        return f"{self.usuario.username} - {self.tipo_calculo} - {self.data_criacao.strftime('%d/%m/%Y')}"

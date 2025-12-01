@@ -1,224 +1,222 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<div class="ip-container">
 
+<div class="ip-container">
     <div class="ip-calendario">
         <h2>Calendário</h2>
-
         <div class="ip-header-selects">
             <select id="mesSelect"></select>
             <select id="anoSelect"></select>
         </div>
-
         <div class="ip-calendar-grid" id="calendario"></div>
     </div>
 
     <div class="ip-formulario">
         <h2>Adicionar compromisso</h2>
-
         <label>Data selecionada:</label>
         <input type="text" id="dataSelecionada" readonly placeholder="Nenhuma data">
-
         <input type="text" id="tituloEvento" placeholder="Título do compromisso">
-
         <input type="time" id="horaEvento">
-
         <button onclick="adicionarEvento()">Salvar compromisso</button>
-
+        
         <div class="ip-eventos">
             <h3>Compromissos salvos</h3>
             <div id="listaEventos"></div>
         </div>
     </div>
-
 </div>
 
 <script>
+    // Chave única baseada no ID do usuário
     const usuarioID = "{{ request.user.id }}";
-    const STORAGE_KEY = "ip-eventos-user-" + usuarioID;
-
-
-    const calendario = document.getElementById("calendario");
-    const mesSelect = document.getElementById("mesSelect");
-    const anoSelect = document.getElementById("anoSelect");
-    const dataSelecionada = document.getElementById("dataSelecionada");
-    const listaEventosDiv = document.getElementById("listaEventos");
+    const STORAGE_KEY = "agendamentos_user_" + usuarioID;
 
     let eventos = [];
     let dataAtual = new Date();
 
-    function salvarEventosStorage() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(eventos || []));
+    // Carregar eventos do localStorage
+    function carregarEventos() {
+        const dados = localStorage.getItem(STORAGE_KEY);
+        eventos = dados ? JSON.parse(dados) : [];
     }
 
-    function carregarEventosStorage() {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        eventos = raw ? JSON.parse(raw) : [];
+    // Salvar eventos no localStorage
+    function salvarEventos() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(eventos));
     }
 
-
+    // Preencher selects de mês e ano
     function preencherSelects() {
         const meses = [
             "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
             "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
         ];
 
-        mesSelect.innerHTML = "";
-        anoSelect.innerHTML = "";
+        // Limpar selects
+        document.getElementById("mesSelect").innerHTML = '';
+        document.getElementById("anoSelect").innerHTML = '';
 
-        meses.forEach((m, i) => {
-            const opt = document.createElement("option");
-            opt.value = i;
-            opt.textContent = m;
-            if (i === dataAtual.getMonth()) opt.selected = true;
-            mesSelect.appendChild(opt);
+        // Adicionar meses
+        meses.forEach((mes, index) => {
+            const option = document.createElement("option");
+            option.value = index;
+            option.textContent = mes;
+            if (index === dataAtual.getMonth()) option.selected = true;
+            document.getElementById("mesSelect").appendChild(option);
         });
 
-        for (let ano = 1990; ano <= 2050; ano++) {
-            const opt = document.createElement("option");
-            opt.value = ano;
-            opt.textContent = ano;
-            if (ano === dataAtual.getFullYear()) opt.selected = true;
-            anoSelect.appendChild(opt);
+        // Adicionar anos (2025-2030)
+        for (let ano = 2025; ano <= 2030; ano++) {
+            const option = document.createElement("option");
+            option.value = ano;
+            option.textContent = ano;
+            if (ano === dataAtual.getFullYear()) option.selected = true;
+            document.getElementById("anoSelect").appendChild(option);
         }
     }
 
-    function formataDDMMYYYY(dia, mes, ano) {
-        const dd = String(dia).padStart(2, "0");
-        const mm = String(mes).padStart(2, "0");
-        return `${dd}/${mm}/${ano}`;
+    // Formatar data DD/MM/YYYY
+    function formatarData(dia, mes, ano) {
+        return `${dia.toString().padStart(2, '0')}/${(mes).toString().padStart(2, '0')}/${ano}`;
     }
 
+    // Verificar se há evento em uma data
     function temEventoNaData(dataStr) {
-        if (!eventos || eventos.length === 0) return false;
-        return eventos.some(ev => ev.data === dataStr);
+        return eventos.some(evento => evento.data === dataStr);
     }
 
+    // Gerar calendário
     function gerarCalendario() {
-        calendario.innerHTML = "";
+        const calendario = document.getElementById("calendario");
+        calendario.innerHTML = '';
 
-        const mes = parseInt(mesSelect.value, 10);
-        const ano = parseInt(anoSelect.value, 10);
+        const mes = parseInt(document.getElementById("mesSelect").value);
+        const ano = parseInt(document.getElementById("anoSelect").value);
 
-        const primeiroDiaSemana = new Date(ano, mes, 1).getDay();
+        // Primeiro dia do mês
+        const primeiroDia = new Date(ano, mes, 1).getDay();
         const ultimoDia = new Date(ano, mes + 1, 0).getDate();
 
-        for (let i = 0; i < primeiroDiaSemana; i++) {
-            const spacer = document.createElement("div");
-            spacer.className = "ip-day ip-day--empty";
-            spacer.style.background = "transparent";
-            spacer.style.border = "none";
-            calendario.appendChild(spacer);
+        // Dias vazios no início
+        for (let i = 0; i < primeiroDia; i++) {
+            const diaVazio = document.createElement("div");
+            diaVazio.className = "ip-day ip-day--empty";
+            calendario.appendChild(diaVazio);
         }
 
+        // Dias do mês
         for (let dia = 1; dia <= ultimoDia; dia++) {
-            const cell = document.createElement("div");
-            cell.className = "ip-day";
-            cell.textContent = dia;
+            const diaElement = document.createElement("div");
+            diaElement.className = "ip-day";
+            diaElement.textContent = dia;
 
-            const dataStr = formataDDMMYYYY(dia, mes + 1, ano);
+            const dataStr = formatarData(dia, mes + 1, ano);
 
+            // Marcar se tem evento
             if (temEventoNaData(dataStr)) {
-                cell.classList.add("ip-day-evento");
+                diaElement.classList.add("ip-day-evento");
             }
 
-            cell.addEventListener("click", () => {
+            // Selecionar data
+            diaElement.addEventListener("click", function() {
                 document.querySelectorAll(".ip-day").forEach(d => d.classList.remove("ip-selected"));
-                cell.classList.add("ip-selected");
-                dataSelecionada.value = dataStr;
+                this.classList.add("ip-selected");
+                document.getElementById("dataSelecionada").value = dataStr;
             });
 
-            calendario.appendChild(cell);
+            calendario.appendChild(diaElement);
         }
     }
 
+    // Atualizar lista de eventos
     function atualizarLista() {
-        listaEventosDiv.innerHTML = "";
-        if (!eventos || eventos.length === 0) {
-            listaEventosDiv.innerHTML = "<p style='color:#666;margin:0;'>Nenhum compromisso</p>";
+        const lista = document.getElementById("listaEventos");
+        lista.innerHTML = '';
+
+        if (eventos.length === 0) {
+            lista.innerHTML = '<p style="color:#666;">Nenhum compromisso salvo</p>';
             return;
         }
 
-        eventos.forEach((ev, i) => {
+        // Ordenar por data (mais recente primeiro)
+        eventos.sort((a, b) => {
+            const [diaA, mesA, anoA] = a.data.split('/').map(Number);
+            const [diaB, mesB, anoB] = b.data.split('/').map(Number);
+            return new Date(anoB, mesB - 1, diaB) - new Date(anoA, mesA - 1, diaA);
+        });
+
+        // Adicionar cada evento
+        eventos.forEach((evento, index) => {
             const item = document.createElement("div");
             item.className = "ip-evento-item";
 
             const texto = document.createElement("span");
-            const horaFinal = ev.hora && ev.hora.trim() !== "" ? ev.hora : "Sem horário";
+            const hora = evento.hora === "Sem horário" ? "" : ` - ${evento.hora}`;
+            texto.innerHTML = `<strong>${evento.data}</strong>${hora} - ${evento.titulo}`;
 
-            texto.innerHTML = `<strong>${ev.data}</strong> — ${horaFinal} — ${ev.titulo}`;
-
-            const btn = document.createElement("button");
-            btn.className = "ip-remover";
-            btn.type = "button";
-            btn.setAttribute("aria-label", "Remover compromisso");
-            btn.textContent = "X";
-            btn.addEventListener("click", () => {
-                const confirmar = confirm("Tem certeza que deseja excluir?");
-                if (!confirmar) return;
-
-                eventos.splice(i, 1);
-                salvarEventosStorage();
-                atualizarLista();
-                gerarCalendario();
-            });
-
+            const botao = document.createElement("button");
+            botao.className = "ip-remover";
+            botao.textContent = "X";
+            botao.onclick = function() {
+                if (confirm("Excluir este compromisso?")) {
+                    eventos.splice(index, 1);
+                    salvarEventos();
+                    atualizarLista();
+                    gerarCalendario();
+                }
+            };
 
             item.appendChild(texto);
-            item.appendChild(btn);
-            listaEventosDiv.appendChild(item);
+            item.appendChild(botao);
+            lista.appendChild(item);
         });
     }
 
+    // Adicionar novo evento
     function adicionarEvento() {
-        if (!usuarioID || usuarioID === "None") {
-            alert("Você precisa estar logado para salvar compromissos.");
-            return;
-        }
-
-        const data = dataSelecionada.value;
+        const data = document.getElementById("dataSelecionada").value;
         const titulo = document.getElementById("tituloEvento").value.trim();
         let hora = document.getElementById("horaEvento").value;
 
+        // Validações
         if (!data) return alert("Selecione uma data no calendário.");
-        if (!titulo) return alert("Digite um título.");
+        if (!titulo) return alert("Digite um título para o compromisso.");
 
-        if (!hora || hora.trim() === "") {
-            hora = "Sem horário";
-        }
+        // Se não tiver hora, define como "Sem horário"
+        if (!hora) hora = "Sem horário";
 
-        eventos.push({ data, titulo, hora });
-        salvarEventosStorage();
+        // Adicionar evento
+        eventos.push({
+            data: data,
+            titulo: titulo,
+            hora: hora
+        });
 
+        // Salvar e atualizar
+        salvarEventos();
+        atualizarLista();
+        gerarCalendario();
+
+        // Limpar formulário
         document.getElementById("tituloEvento").value = "";
         document.getElementById("horaEvento").value = "";
-
-        atualizarLista();
-        gerarCalendario();
     }
 
-    function init() {
-        carregarEventosStorage();
+    // Inicializar
+    document.addEventListener("DOMContentLoaded", function() {
+        carregarEventos();
         preencherSelects();
-        atualizarLista();
         gerarCalendario();
-        mesSelect.addEventListener("change", gerarCalendario);
-        anoSelect.addEventListener("change", gerarCalendario);
-    }
+        atualizarLista();
 
+        // Event listeners para mudança de mês/ano
+        document.getElementById("mesSelect").addEventListener("change", gerarCalendario);
+        document.getElementById("anoSelect").addEventListener("change", gerarCalendario);
+    });
+
+    // Exportar função para o botão
     window.adicionarEvento = adicionarEvento;
-
-    init();
-
-    // -------------------------------Verificação de login----------------------------------------- //
-
-    
-
 </script>
 
-
-</body>
-
-</html>
 {% endblock %}

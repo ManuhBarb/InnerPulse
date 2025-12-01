@@ -1,8 +1,13 @@
 from django.contrib import admin
-from django.urls import include, path
-from django.views.generic import TemplateView
-from app.views import *
-from app.views import LoginView, LogoutView
+from django.urls import path
+from app.views import (
+    IndexView, CidadesView, OcupacoesView, CadastroView, EventosView, 
+    AgendamentosView, RelatoriosView, DoencasView, CalculeView, LoginView, 
+    LogoutView, PerfilView, PostListView, PostDetailView, LikeCommentView, 
+    DeleteCommentView, SalvarResultadoView, MeusResultadosView, DeletarResultadoView, AgendamentosView,
+    add_comment  # Importa a função normalmente
+)
+ 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -18,4 +23,13 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('perfil/', PerfilView.as_view(), name='perfil'),
+    path('posts/', PostListView.as_view(), name='post_list'),
+    path('posts/<int:post_id>/', PostDetailView.as_view(), name='post_detail'),
+    path('comment/<int:comment_id>/like/', LikeCommentView.as_view(), name='like_comment'),
+    path('comment/<int:comment_id>/delete/', DeleteCommentView.as_view(), name='delete_comment'),
+    path('salvar-resultado/', SalvarResultadoView.as_view(), name='salvar_resultado'),
+    path('meus-resultados/', MeusResultadosView.as_view(), name='meus_resultados'),
+    path('deletar-resultado/<int:resultado_id>/', DeletarResultadoView.as_view(), name='deletar_resultado'),
+    path('add-comment/', add_comment, name='add_comment'),
+    path('agendamentos/', AgendamentosView.as_view(), name='agendamentos'),
 ]

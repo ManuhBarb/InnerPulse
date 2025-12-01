@@ -3,69 +3,316 @@
 {% block content %}
 
 <div class="index d-flex align-items-center">
-    <div class="porra">
+    <div class="hero-content">
         <h1 class="display-4">INNER PULSE</h1>
-        <p class="princ">
+        <p class="hero-text">
             Mesmo nas rotinas mais difíceis, há espaço para força, cuidado e qualidade de vida.
-            Estamos aqui para apoiar cada passo da sua jornada de autocuidado e superação
+            Estamos aqui para apoiar cada passo da sua jornada de autocuidado e superação!
         </p>
         <a href="#resto" class="btn btn-primary btn-lg mt-3">Saiba mais</a>
     </div>
 </div>
 
 <div id="resto" class="container mt-5">
-    <br>
-    <p class="apresentacao">A plataforma Inner Pulse é uma iniciativa inovadora desenvolvida por duas estudantes do
-        ensino médio do IFSULDEMINAS
-        – Campus Muzambinho, com o objetivo de transformar a forma como pessoas com doenças crônicas lidam com sua saúde
-        no dia a dia.
+    <br><br>
+    <p class="apresentacao">
+        A plataforma Inner Pulse é uma iniciativa inovadora desenvolvida por duas estudantes do ensino médio do
+        IFSULDEMINAS – Campus Muzambinho, com o objetivo de transformar a forma como pessoas com doenças crônicas lidam
+        com sua saúde no dia a dia.
         <br><br>
         Criada a partir da preocupação com a rotina desafiadora desses pacientes, a Inner Pulse busca ser mais do que
-        uma simples
-        ferramenta digital: é um apoio constante. A plataforma oferece funcionalidades que ajudam na organização de
-        medicamentos,
-        consultas, exames e atividades diárias, promovendo mais autonomia e bem-estar para quem convive com condições
-        crônicas como
-        diabetes, hipertensão, asma, entre outras.
+        uma simples ferramenta digital: é um apoio constante. A plataforma oferece funcionalidades que ajudam na
+        organização de medicamentos, consultas, exames e atividades diárias, promovendo mais autonomia e bem-estar para
+        quem convive com condições crônicas como diabetes, hipertensão, asma, entre outras.
         <br><br>
         Além disso, a Inner Pulse tem um importante papel educacional. Sabendo que muitas pessoas não têm acesso fácil a
-        informações de
-        qualidade sobre suas doenças, a plataforma disponibiliza conteúdos claros e acessíveis, que explicam sintomas,
-        cuidados necessários,
-        hábitos saudáveis e alertas importantes – tudo de forma simples, confiável e voltada para o público leigo.
+        informações de qualidade sobre suas doenças, a plataforma disponibiliza conteúdos claros e acessíveis, que
+        explicam sintomas, cuidados necessários, hábitos saudáveis e alertas importantes – tudo de forma simples,
+        confiável e voltada para o público leigo.
         <br><br>
         Com uma interface amigável e pensada para todas as idades, a Inner Pulse se destaca por aliar tecnologia,
-        empatia e conhecimento.
-        A iniciativa das estudantes mostra como a juventude, a ciência e a educação podem caminhar juntas para gerar
-        impacto social e
-        melhorar vidas.
+        empatia e conhecimento. A iniciativa das estudantes mostra como a juventude, a ciência e a educação podem
+        caminhar juntas para gerar impacto social e melhorar vidas.
     </p>
 </div>
 
-<!-- SEÇÃO DE COMENTÁRIOS FIXOS (com fotos circulares) -->
-<div id="comentarios" class="container mt-5 mb-5">
-    <h2 class="text-center mb-4">Comunidade Inner Pulse 💬</h2>
-    <p class="text-center text-muted mb-4">
-        Veja o que outras pessoas estão dizendo sobre a plataforma.
+<div class="features-section">
+    <h1 class="text-center mb-4">Como funciona o nosso sistema?</h1>
+
+    <p class="apresentacao text-center">
+        Temos à sua disposição uma variedade de ferramentas criadas especialmente para facilitar sua jornada.
     </p>
 
-    <div class="row">
-        <!-- Coluna da esquerda -->
-        <div class="col-md-6">
-            <div class="card mb-3 shadow-sm">
-                <div class="card-body d-flex align-items-start">
-                    <img src="{% static 'imagens/user1.jpg' %}" class="rounded-circle me-3" alt="Maria Silva" width="50"
-                        height="50">
-                    <div>
-                        <h5 class="card-title mb-1">Maria Silva</h5>
-                        <p class="card-text">
-                            A Inner Pulse me ajuda a manter minha rotina de cuidados com muito mais facilidade!
-                        </p>
-                        <small class="text-muted">20/10/2025 às 14:35</small>
-                    </div>
+    <div class="cards-container d-flex flex-wrap justify-content-center gap-4 mb-5">
+        <div class="card">
+            <img src="https://i.ibb.co/kg5yrNKT/DCNT.jpg" class="card-img-top" alt="Doenças Crônicas">
+            <div class="card-body">
+                <h5 class="card-title">Doenças Crônicas</h5>
+                <p class="card-text">Ferramenta com sintomas, tratamentos e mais.</p>
+                <a href="{% url 'doenca' %}" class="btn-card">Visitar</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://i.ibb.co/FLDtDdr5/calcule.jpg" class="card-img-top" alt="Calcule">
+            <div class="card-body">
+                <h5 class="card-title">Calcule</h5>
+                <p class="card-text">Ferramenta para calcular índices corporais.</p>
+                <a href="{% url 'calcule' %}" class="btn-card">Visitar</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://i.ibb.co/wF77NyrW/evento.jpg" class="card-img-top" alt="Eventos">
+            <div class="card-body">
+                <h5 class="card-title">Eventos</h5>
+                <p class="card-text">Informações sobre eventos da saúde.</p>
+                <a href="{% url 'evento' %}" class="btn-card">Visitar</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://i.ibb.co/gZGHkzyB/agendamento.jpg" class="card-img-top" alt="Agendamentos">
+            <div class="card-body">
+                <h5 class="card-title">Agendamentos</h5>
+                <p class="card-text">Organize compromissos, remédios e eventos.</p>
+                <a href="{% url 'agendamento' %}" class="btn-card">Visitar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="team-section">
+    <div class="team-container">
+        <div class="team-header">
+            <h1><i class="fas fa-users"></i> Comissão organizadora</h1>
+        </div>
+
+        <div class="team-members">
+            <div class="team-member">
+                <div class="member-info">
+                    <h3>Discente Emanuelle Barbara de Oliveira</h3>
+                    <p class="member-role">Contribuinte do InnerPulse</p>
+                    <p class="member-affiliation">Aluna do técnico em informática</p>
+                </div>
+            </div>
+
+            <div class="team-member">
+                <div class="member-info">
+                    <h3>Discente Leticia Francine Paixão Silva</h3>
+                    <p class="member-role">Contribuinte do InnerPulse</p>
+                    <p class="member-affiliation">Aluna do técnico em informática</p>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    {% endblock %}
+<!-- ======== SEÇÃO DE COMENTÁRIOS ======== -->
+<div class="comments-section">
+    <h1 class="text-center mb-3">Depoimentos da nossa comunidade</h1>
+    <p class="apresentacao text-center">Veja o que outras pessoas estão dizendo sobre a nossa plataforma.</p>
+
+    {% if comments %}
+    <div id="commentsCarousel" class="carousel slide" data-bs-ride="carousel">
+
+        <div class="carousel-indicators">
+            {% for i in slide_indices %}
+            <button type="button" data-bs-target="#commentsCarousel" data-bs-slide-to="{{ forloop.counter0 }}"
+                class="{% if forloop.first %}active{% endif %}">
+            </button>
+            {% endfor %}
+        </div>
+
+        <div class="carousel-inner">
+            {% for slide in slides %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <div class="row justify-content-center">
+                    {% for comment in slide %}
+                    <div class="col-lg-6">
+                        <div class="comment-card">
+                            <div class="comment-body">
+                                <div class="comment-header">
+                                    <strong>{{ comment.get_author_name }}</strong>
+                                    <div class="comment-meta">
+                                        <span>{{ comment.created_at|date:"d/m/Y H:i" }}</span>
+                                        {% if user == comment.author or user.is_staff %}
+                                        <button class="delete-comment" data-comment-id="{{ comment.id }}">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="comment-text">{{ comment.text|linebreaks }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#commentsCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#commentsCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+    {% else %}
+    <div class="no-comments text-center py-5">
+        <i class="fas fa-comment-slash fa-3x text-muted mb-3"></i>
+        <p class="fs-5 text-muted">Seja o primeiro a comentar!</p>
+    </div>
+    {% endif %}
+
+    <div class="comment-form-wrapper">
+        <div class="comment-form-card">
+            {% if user.is_authenticated %}
+
+            <h2 class="form-title">Deixe seu comentário</h2>
+            <form id="comment-form" method="post" action="{% url 'add_comment' %}">
+                {% csrf_token %}
+                <textarea name="text" rows="4" class="form-control" placeholder="Escreva aqui..." required></textarea>
+
+                <button type="submit" class="submit-btn mt-3">Enviar</button>
+            </form>
+
+            {% else %}
+
+            <div class="login-required-message text-center">
+                <i class="fas fa-lock fa-3x text-primary mb-3"></i>
+                <h4>Faça login para comentar</h4>
+                <p class="text-muted">Você precisa estar logado para enviar um comentário.</p>
+
+                <div class="d-flex gap-3 justify-content-center mt-3">
+                    <a href="{% url 'login' %}" class="btn btn-primary btn-lg">Login</a>
+                    <a href="{% url 'cadastro' %}" class="btn btn-primary btn-lg">Criar conta</a>
+                </div>
+            </div>
+
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // --- ENVIO DE COMENTÁRIOS ---
+    const commentForm = document.getElementById('comment-form');
+
+    if (commentForm) {
+        commentForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const btn = this.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+
+            btn.textContent = 'Enviando...';
+            btn.disabled = true;
+
+            fetch("{% url 'add_comment' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({
+                    text: formData.get("text"),
+                    post_id: "{{ post.id }}"
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage("Comentário adicionado com sucesso!", "success");
+                    location.reload();
+                } else {
+                    showMessage(data.error || "Erro ao enviar comentário", "error");
+                }
+            })
+            .catch(err => {
+                console.error("Erro geral:", err);
+                showMessage("Erro inesperado ao enviar", "error");
+            })
+            .finally(() => {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            });
+        });
+    }
+
+    // --- DELETE DE COMENTÁRIOS ---
+    const deleteButtons = document.querySelectorAll('.delete-comment');
+
+    deleteButtons.forEach(btn => {
+        btn.addEventListener('click', function () {
+            const commentId = this.dataset.commentId;
+
+            if (!confirm("Deseja realmente deletar este comentário?")) return;
+
+            fetch(`/comment/${commentId}/delete/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage("Comentário deletado!", "success");
+                    location.reload();
+                } else {
+                    showMessage(data.error || "Erro ao deletar comentário", "error");
+                }
+            })
+            .catch(err => {
+                console.error("Erro ao deletar:", err);
+                showMessage("Erro inesperado ao deletar", "error");
+            });
+        });
+    });
+
+    // --- FUNÇÕES AUXILIARES ---
+    function getCookie(name) {
+        let cookieValue = null;
+        const cookies = document.cookie.split(";");
+
+        cookies.forEach(cookie => {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + "=")) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            }
+        });
+
+        return cookieValue;
+    }
+
+    function showMessage(message, type) {
+        const div = document.createElement("div");
+
+        div.className =
+            "alert alert-" +
+            (type === "success" ? "success" : "danger") +
+            " alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3";
+
+        div.style.zIndex = "1050";
+        div.innerHTML =
+            message +
+            '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+
+        document.body.appendChild(div);
+
+        setTimeout(() => {
+            if (div.parentNode) div.remove();
+        }, 5000);
+    }
+});
+</script>
+
+
+
+{% endblock %}

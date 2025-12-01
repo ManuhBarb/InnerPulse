@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="resultados-container">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="page-title">
+                    <i class="fas fa-history"></i> Meus Resultados Salvos
+                </h1>
+                <p class="text-muted text-center mb-4">
+                    Aqui você pode visualizar todos os resultados que salvou das calculadoras de saúde
+                </p>
+                
+                {% if resultados %}
+                    <div class="resultados-horizontal">
+                        {% for resultado in resultados %}
+                        <div class="resultado-card">
+                            <div class="card-header card-header-resultados d-flex justify-content-between align-items-center">
+                                <strong>
+                                    <i class="fas 
+                                        {% if resultado.tipo_calculo == 'imc' %}fa-weight-scale
+                                        {% elif resultado.tipo_calculo == 'glicose' %}fa-tint
+                                        {% elif resultado.tipo_calculo == 'agua' %}fa-glass-water
+                                        {% else %}fa-heart-pulse{% endif %}
+                                    "></i>
+                                    {{ resultado.get_tipo_calculo_display }}
+                                </strong>
+                                
+                                <div>
+                                    <small class="text-white me-2">{{ resultado.data_criacao|date:"d/m/Y" }}</small>
+                                    <a href="{% url 'deletar_resultado' resultado.id %}" 
+                                       onclick="return confirm('Tem certeza que quer excluir?')"
+                                       class="text-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="card-body card-body-resultados">
+                                {% if resultado.tipo_calculo == 'imc' %}
+                                    <p><strong>Valor do IMC:</strong> {{ resultado.resultado.valor }}</p>
+                                    <p><strong>Classificação:</strong> {{ resultado.resultado.classificacao }}</p>
+                                    <p><strong>Peso:</strong> {{ resultado.resultado.peso }} kg</p>
+                                    <p><strong>Altura:</strong> {{ resultado.resultado.altura }} m</p>
+                                
+                                {% elif resultado.tipo_calculo == 'glicose' %}
+                                    <p><strong>Valor da Glicose:</strong> {{ resultado.resultado.valor }} mg/dL</p>
+                                    <p><strong>Status:</strong> 
+                                        {% if resultado.resultado.cor %}
+                                            <<span style="color: {{ resultado.resultado.cor|default:'inherit' }}">
+                                                {{ resultado.resultado.classificacao }}
+                                            </span>
+                                        {% else %}
+                                            {{ resultado.resultado.classificacao }}
+                                        {% endif %}
+                                    </p>
+                                
+                                {% elif resultado.tipo_calculo == 'agua' %}
+                                    <p><strong>Água Recomendada:</strong> {{ resultado.resultado.agua_ml }} ml</p>
+                                    <p><strong>Copos de 200ml:</strong> {{ resultado.resultado.copos }} copos</p>
+                                    <p><strong>Peso Considerado:</strong> {{ resultado.resultado.peso }} kg</p>
+                                
+                                {% elif resultado.tipo_calculo == 'pressao' %}
+                                    <p><strong>Pressão Arterial:</strong> {{ resultado.resultado.sistolica }}/{{ resultado.resultado.diastolica }} mmHg</p>
+                                    <p><strong>Classificação:</strong> 
+                                        {% if resultado.resultado.cor %}
+                                            <<span style="color: {{ resultado.resultado.cor|default:'inherit' }}">
+                                                {{ resultado.resultado.classificacao }}
+                                            </span>
+                                        {% else %}
+                                            {{ resultado.resultado.classificacao }}
+                                        {% endif %}
+                                    </p>
+                                {% endif %}
+                                
+                                <hr class="my-3">
+                                
+                                <p class="text-muted small mb-0">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    Calculado em: {{ resultado.resultado.data }}
+                                </p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="text-center mt-5">
+                        <a href="{% url 'calcule' %}" class="btn btn-primary">
+                            <i class="fas fa-calculator"></i> Voltar para Calculadoras
+                        </a>
+                    </div>
+                    
+                {% else %}
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle fa-2x mb-3"></i>
+                        <h4>Nenhum resultado salvo</h4>
+                        <p>Use as calculadoras e salve seus resultados para vê-los aqui.</p>
+                        <a href="{% url 'calcule' %}" class="btn btn-primary">
+                            <i class="fas fa-calculator"></i> Ir para Calculadoras
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .resultados-container {
+        margin-top: 0;
+        padding-top: 30px;
+        min-height: calc(100vh - 70px);
+        background-color: #f8fafc;
+    }
+    
+    .resultados-horizontal {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        padding: 0 15px;
+    }
+    
+    .resultado-card {
+        flex: 0 0 calc(33.333% - 20px);
+        min-width: 300px;
+        max-width: 400px;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background: #fff;
+        margin-bottom: 0;
+    }
+    
+    .card-header-resultados {
+        background: linear-gradient(135deg, #073567);
+        color: white;
+        border-radius: 12px 12px 0 0 !important;
+        padding: 15px 20px;
+        border: none;
+    }
+    
+    @media (max-width: 1200px) {
+        .resultado-card {
+            flex: 0 0 calc(50% - 20px);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .resultados-horizontal {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .resultado-card {
+            flex: 0 0 100%;
+            min-width: auto;
+            max-width: 100%;
+        }
+    }
+</style>
+{% endblock %}

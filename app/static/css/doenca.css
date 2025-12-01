@@ -178,9 +178,17 @@ h3 {
 }
 
 .btn {
-  border-radius: 20px solid #fff;
-  background-color: rgb(9, 17, 121);
-  color: #fff;
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: rgb(9, 17, 121);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
 }
 
 @media (max-width: 720px) {

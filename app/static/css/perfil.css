@@ -4,6 +4,12 @@ body {
     padding: 20px;
 }
 
+.perfil-container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 30px;
+}
+
 .btn-voltar {
     position: fixed;
     top: 20px;

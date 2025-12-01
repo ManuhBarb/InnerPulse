@@ -7,7 +7,18 @@ from django.contrib.auth.models import User
 from django.views.generic import ListView
 from django.db import transaction, IntegrityError
 from django.http import JsonResponse, HttpResponseForbidden
+from django.utils import timezone
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
 from datetime import date, datetime
+import json
+from itertools import islice
 
 from .models import (
     Usuario,
@@ -15,12 +26,90 @@ from .models import (
     Ocupacao,
     Evento,
     Agendamento,
-    Relatorio
+    Relatorio,
+    ResultadoCalculadora,
+    Post,
+    Comment
 )
+
+from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+class AgendamentosView(LoginRequiredMixin, TemplateView):
+    template_name = 'agendamentos.html'
+    
+    # Opcional: configurar redirecionamento se não estiver logado
+    login_url = '/login/'  # ajuste para sua URL de login
+    redirect_field_name = 'next'
+
+@csrf_exempt
+@require_POST
+def add_comment(request):
+    try:
+        data = json.loads(request.body)
+        text = data.get('text', '').strip()
+        author_name = data.get('author_name', '').strip()
+        post_id = data.get('post_id', 1)
+        
+        if not text:
+            return JsonResponse({'success': False, 'error': 'O comentário não pode estar vazio'})
+        
+        post = get_object_or_404(Post, id=post_id)
+        
+        comment = Comment(
+            post=post,
+            text=text,
+            created_at=timezone.now(),
+            approved=True
+        )
+        
+        if request.user.is_authenticated:
+            comment.author = request.user
+            comment.author_name = request.user.username
+        elif author_name:
+            comment.author_name = author_name
+        else:
+            comment.author_name = "Anônimo"
+        
+        comment.save()
+        
+        return JsonResponse({
+            'success': True,
+            'comment': {
+                'id': comment.id,
+                'author_name': comment.author_name,
+                'text': comment.text,
+                'created_at': comment.created_at.strftime('%d/%m/%Y %H:%M'),
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
 
 class IndexView(View):
     def get(self, request):
-        return render(request, 'index.html')
+        post, created = Post.objects.get_or_create(
+            id=1,
+            defaults={
+                'title': 'Página Inicial - Comentários',
+                'content': 'Comentários da comunidade sobre a plataforma Inner Pulse'
+            }
+        )
+        comments = post.comments.filter(approved=True)
+        
+        comments_list = list(comments)
+        slides = []
+        for i in range(0, len(comments_list), 2):
+            slides.append(comments_list[i:i+2])
+        
+        slide_indices = range(len(slides))
+        
+        return render(request, 'index.html', {
+            'comments': comments,
+            'post': post,
+            'slides': slides,
+            'slide_indices': slide_indices
+        })
 
 class CidadesView(View):
     def get(self, request):
@@ -73,6 +162,7 @@ class CalculeView(View):  # Remove LoginRequiredMixin
             "texto": texto
         }
         return render(request, self.template_name, contexto)
+
     
 class LoginView(View):
     template_name = 'login.html'
@@ -164,18 +254,17 @@ class CadastroView(View):
                         user.delete()
                         return redirect("cadastro")
 
-                # Obtém cidade e ocupação
+                
                 cidade = Cidade.objects.get(id=cidade_id) if cidade_id else None
                 ocupacao = Ocupacao.objects.get(id=ocupacao_id) if ocupacao_id else None
 
-                # 🔥 CORREÇÃO: Verifica novamente antes de criar
+                
                 if hasattr(user, 'usuario'):
                     print("⚠️ User já tem perfil, deletando...")
                     user.usuario.delete()
 
-                # Cria o Usuario
                 usuario = Usuario.objects.create(
-                    user=user,  # user_id será a chave primária
+                    user=user,
                     nome=nome,
                     data_nasc=data_nasc,
                     cpf=cpf,
@@ -221,3 +310,147 @@ class PerfilView(LoginRequiredMixin, View):
         except Usuario.DoesNotExist:
             messages.error(request, "Perfil não encontrado.")
             return redirect('index')
+        
+# === SISTEMA DE COMENTÁRIOS ===
+
+class PostListView(View):
+    def get(self, request):
+        posts = Post.objects.all().order_by('-created_at')
+        return render(request, 'blog/post_list.html', {'posts': posts})
+
+class PostDetailView(View):
+    def get(self, request, post_id):
+        post = get_object_or_404(Post, id=post_id)
+        comments = post.comments.filter(approved=True)
+        
+        context = {
+            'post': post,
+            'comments': comments,
+        }
+        return render(request, 'blog/post_detail.html', context)
+
+    def post(self, request, post_id):
+        post = get_object_or_404(Post, id=post_id)
+        
+        # Processa o comentário manualmente
+        author_name = request.POST.get('author_name', '').strip()
+        text = request.POST.get('text', '').strip()
+        
+        # Validação básica
+        if text:  # Verifica se o texto não está vazio
+            comment = Comment(
+                post=post,
+                text=text,
+                author_name=author_name
+            )
+            
+            # Se usuário está logado, associa ao usuário
+            if request.user.is_authenticated:
+                comment.author = request.user
+                # Se não preencheu nome, usa username
+                if not author_name:
+                    comment.author_name = request.user.username
+            
+            comment.save()
+            
+            # Verifica se é requisição AJAX
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'comment': {
+                        'id': comment.id,
+                        'author_name': comment.get_author_name(),
+                        'text': comment.text,
+                        'created_at': comment.created_at.strftime('%d/%m/%Y %H:%M'),
+                        'likes': comment.likes
+                    }
+                })
+            
+            messages.success(request, "Comentário adicionado com sucesso!")
+            return redirect('post_detail', post_id=post_id)
+        else:
+            # Texto vazio - mostra erro
+            error = "O comentário não pode estar vazio"
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'error': error})
+            messages.error(request, error)
+            return redirect('post_detail', post_id=post_id)
+
+class LikeCommentView(LoginRequiredMixin, View):
+    def post(self, request, comment_id):
+        comment = get_object_or_404(Comment, id=comment_id)
+        comment.likes += 1
+        comment.save()
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'likes': comment.likes})
+        
+        return redirect('post_detail', post_id=comment.post.id)
+
+class DeleteCommentView(LoginRequiredMixin, View):
+    def post(self, request, comment_id):
+        comment = get_object_or_404(Comment, id=comment_id)
+        
+        # Verifica se o usuário é o autor do comentário
+        if comment.author == request.user or request.user.is_staff:
+            post_id = comment.post.id
+            comment.delete()
+            
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': True})
+            
+            messages.success(request, "Comentário deletado com sucesso!")
+            return redirect('post_detail', post_id=post_id)
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'error': 'Permissão negada'})
+        
+        messages.error(request, "Você não tem permissão para deletar este comentário.")
+        return redirect('post_detail', post_id=comment.post.id);
+
+# views.py - ADICIONE no final do arquivo --------------------------------------------------------------
+
+@method_decorator(csrf_exempt, name='dispatch')
+class SalvarResultadoView(LoginRequiredMixin, View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            tipo_calculo = data.get('tipo_calculo')
+            resultado = data.get('resultado')
+            
+            if not tipo_calculo or not resultado:
+                return JsonResponse({'success': False, 'error': 'Dados incompletos'})
+            
+            tipos_validos = ['imc', 'glicose', 'agua', 'pressao']
+            if tipo_calculo not in tipos_validos:
+                return JsonResponse({'success': False, 'error': 'Tipo de cálculo inválido'})
+            
+            ResultadoCalculadora.objects.create(
+                usuario=request.user,
+                tipo_calculo=tipo_calculo,
+                resultado=resultado
+            )
+            
+            return JsonResponse({'success': True})
+            
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'JSON inválido'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+
+class MeusResultadosView(LoginRequiredMixin, View):
+    def get(self, request):
+        resultados = ResultadoCalculadora.objects.filter(usuario=request.user)
+        return render(request, 'meus_resultados.html', {'resultados': resultados})
+
+# views.py - MODIFIQUE a view
+class DeletarResultadoView(LoginRequiredMixin, View):
+    def get(self, request, resultado_id):  # Mude para GET
+        try:
+            resultado = get_object_or_404(ResultadoCalculadora, id=resultado_id, usuario=request.user)
+            resultado.delete()
+            messages.success(request, "Resultado excluído com sucesso!")
+            return redirect('meus_resultados')
+        except Exception as e:
+            messages.error(request, f"Erro ao excluir: {str(e)}")
+            return redirect('meus_resultados')
