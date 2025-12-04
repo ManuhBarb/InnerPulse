@@ -35,34 +35,78 @@ from .models import (
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+
+
+
+
+
+
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .forms import AgendamentoForm
+from .models import Agendamento
+
+#@login_required(login_url='login')  # nome da URL de login (pode ser string com path também)
+def agendar_view(request):
+    usuario = getattr(request.user, 'usuario', None)
+    # if usuario is None:
+    #     messages.error(request, 'Perfil de usuário não encontrado. Complete seu cadastro.')
+    #     return redirect('perfil_editar')
+
+    if request.method == 'POST':
+        form = AgendamentoForm(request.POST, user=usuario)
+        if form.is_valid():
+            ag = form.save(commit=False)
+            ag.usuario = usuario
+            ag.save()
+            messages.success(request, 'Agendamento criado com sucesso.')
+            return redirect('agendamento')
+    else:
+        form = AgendamentoForm(user=usuario)
+
+    agendamentos = Agendamento.objects.filter(usuario=usuario).order_by('data_agend', 'horario')
+    return render(request, 'agendamentos/agendar.html', {'form': form, 'agendamentos': agendamentos})
+
 @login_required
-@csrf_exempt
-def salvar_agendamento(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            data_agend = data.get("data")
-            hora = data.get("hora")
-            titulo = data.get("titulo")  # Opcional: se quiser armazenar, pode criar um campo "titulo" no modelo
+def agendamento_delete(request, pk):
+    usuario = getattr(request.user, 'usuario', None)
+    if usuario is None:
+        messages.error(request, 'Perfil de usuário não encontrado.')
+        return redirect('agendamento')
+    ag = get_object_or_404(Agendamento, pk=pk, usuario=usuario)
+    if request.method == 'POST':
+        ag.delete()
+        messages.success(request, 'Agendamento removido.')
+        return redirect('agendamento')
+    return render(request, 'agendamentos/confirm_delete.html', {'agendamento': ag})
 
-            usuario = request.user.usuario  # Pegando o perfil Usuario
 
-            # Usando ocupacao e cidade do perfil do usuário
-            ocupacao = usuario.ocupacao
-            cidade = usuario.cidade
 
-            Agendamento.objects.create(
-                usuario=usuario,
-                ocupacao=ocupacao,
-                cidade=cidade,
-                data_agend=data_agend,
-                horario=hora
-            )
 
-            return JsonResponse({"status": "ok"})
 
-        except Exception as e:
-            return JsonResponse({"status": "erro", "mensagem": str(e)})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @csrf_exempt
@@ -153,11 +197,6 @@ class EventosView(View):
     def get(self, request):
         eventos = Evento.objects.filter(data_termino__gte=date.today()).order_by("data_inicio")
         return render(request, "evento.html", {"eventos": eventos})
-
-class AgendamentosView(View):
-    def get(self, request):
-        agendamentos = Agendamento.objects.all()
-        return render(request, 'agendamento.html', {'agendamentos': agendamentos})
 
 class RelatoriosView(View):
     def get(self, request):

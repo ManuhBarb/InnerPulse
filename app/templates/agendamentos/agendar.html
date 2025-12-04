@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/partials/_header.css' %}">
+<link rel="stylesheet" href="{% static 'css/partials/_footer.css' %}">
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+
+<style>
+  /* Ajusta o body para evitar que o header invada */
+  body {
+    min-height: 100vh;
+    padding-top: 120px;
+    background: #f4f6f9 !important;
+  }
+
+  /* Área principal */
+  .page-wrapper {
+    max-width: 1400px;
+    margin: auto;
+    padding: 20px 25px;
+  }
+
+  /* Calendário */
+  #calendar {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.13);
+  }
+
+  /* Cards maiores */
+  .big-card {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+    border: none;
+  }
+
+  /* Título dos cards */
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+
+  /* Inputs mais bonitos */
+  input,
+  select {
+    border-radius: 8px !important;
+  }
+
+  /* Tabela */
+  .table {
+    font-size: 0.95rem;
+  }
+
+  /* Animação suave */
+  .card {
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  }
+</style>
+
+<div class="page-wrapper">
+
+  {% if messages %}
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  <div class="row g-4">
+
+    <!-- CALENDÁRIO -->
+    <div class="col-md-6">
+      <div id="calendar"></div>
+    </div>
+
+    <!-- FORM + LISTA -->
+    <div class="col-md-6">
+
+      <!-- FORMULÁRIO -->
+      <div class="card big-card mb-4 p-2">
+        <div class="card-body">
+          <h5 class="card-title">Novo agendamento</h5>
+
+          <form method="post" novalidate>
+            {% csrf_token %}
+
+            <div class="mb-3">
+              {{ form.titulo.label_tag }}
+              {{ form.titulo }}
+              {% if form.titulo.errors %}
+              <div class="text-danger small">{{ form.titulo.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              {{ form.data_agend.label_tag }}
+              {{ form.data_agend }}
+              {% if form.data_agend.errors %}
+              <div class="text-danger small">{{ form.data_agend.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              {{ form.horario.label_tag }}
+              {{ form.horario }}
+              {% if form.horario.errors %}
+              <div class="text-danger small">{{ form.horario.errors }}</div>
+              {% endif %}
+            </div>
+
+            {% if form.non_field_errors %}
+            <div class="mb-3 text-danger small">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            {% if user.is_authenticated and user.usuario %}
+            <button class="btn btn-primary w-100" style="border-radius: 8px;" type="submit">
+              Agendar
+            </button>
+            {% else %}
+            <a class="btn btn-primary w-100" style="border-radius: 8px;" href="{% url 'login' %}">Faça login para agendar</a>
+            {% endif %}
+          </form>
+        </div>
+      </div>
+
+      <!-- LISTA DE AGENDAMENTOS -->
+      <div class="card big-card mb-4 p-2">
+        <div class="card-body">
+          <h5 class="card-title">Seus agendamentos</h5>
+
+          {% if agendamentos %}
+          <table class="table table-hover table-sm">
+            <thead>
+              <tr>
+                <th>Título</th>
+                <th>Data</th>
+                <th>Horário</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in agendamentos %}
+              <tr>
+                <td>{{ a.titulo }}</td>
+                <td>{{ a.data_agend|date:"d/m/Y" }}</td>
+                <td>{{ a.horario|time:"H:i" }}</td>
+                <td>
+                  <form method="post" action="{% url 'agendamento_delete' a.pk %}" style="display:inline">
+                    {% csrf_token %}
+                    <button class="btn btn-sm btn-outline-danger" type="submit">Remover</button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <p class="text-muted">Você não tem agendamentos.</p>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- SCRIPT DO CALENDÁRIO -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const calendarEl = document.getElementById('calendar');
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      locale: 'pt-br',
+      height: 'auto',
+
+      dateClick: function (info) {
+        const input = document.getElementById('{{ form.data_agend.id_for_label }}');
+        input.value = info.dateStr;
+        input.scrollIntoView({ behavior: "smooth", block: "center" });
+        input.focus();
+      }
+    });
+
+    calendar.render();
+  });
+</script>
+
+{% endblock %}

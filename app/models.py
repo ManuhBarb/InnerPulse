@@ -54,8 +54,7 @@ class Usuario(models.Model):
 
 class Agendamento(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, verbose_name="Usuário")
-    ocupacao = models.ForeignKey(Ocupacao, on_delete=models.CASCADE, verbose_name="Ocupação")
-    cidade = models.ForeignKey(Cidade, on_delete=models.CASCADE, verbose_name="Cidade")
+    titulo = models.CharField(max_length=100, verbose_name="Título")
     data_agend = models.DateField(verbose_name="Data do Agendamento")
     horario = models.TimeField(verbose_name="Horário")
 

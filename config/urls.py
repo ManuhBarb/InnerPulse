@@ -1,13 +1,7 @@
 from django.contrib import admin
 from django.urls import path
-from app.views import (
-    IndexView, CidadesView, OcupacoesView, CadastroView, EventosView, 
-    AgendamentosView, RelatoriosView, DoencasView, CalculeView, LoginView, 
-    LogoutView, PerfilView, PostListView, PostDetailView, LikeCommentView, 
-    DeleteCommentView, SalvarResultadoView, MeusResultadosView, DeletarResultadoView, salvar_agendamento,
-    add_comment  # Importa a função normalmente
-)
- 
+from app import views
+from app.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -16,7 +10,7 @@ urlpatterns = [
     path('ocupacao/', OcupacoesView.as_view(), name='ocupacao'),
     path('usuario/', CadastroView.as_view(), name='cadastro'),
     path('evento/', EventosView.as_view(), name='evento'),
-    path('agendamento/', AgendamentosView.as_view(), name='agendamento'),
+    # path('agendamento/', AgendamentosView.as_view(), name='agendamento'),
     path('relatorio/', RelatoriosView.as_view(), name='relatorio'),
     path('doenca/', DoencasView.as_view(), name='doenca'),
     path('calcule/', CalculeView.as_view(), name='calcule'),
@@ -31,6 +25,12 @@ urlpatterns = [
     path('meus-resultados/', MeusResultadosView.as_view(), name='meus_resultados'),
     path('deletar-resultado/<int:resultado_id>/', DeletarResultadoView.as_view(), name='deletar_resultado'),
     path('add-comment/', add_comment, name='add_comment'),
-    path("salvar-agendamento/", salvar_agendamento, name="salvar_agendamento"),
+    # path("salvar-agendamento/", salvar_agendamento, name="salvar_agendamento"),
 
+
+
+
+
+    path('agendar/', views.agendar_view, name='agendamento'),
+    path('agendar/<int:pk>/delete/', views.agendamento_delete, name='agendamento_delete'),
 ]
